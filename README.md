@@ -8,20 +8,16 @@ Qool can
 - [ ] File
 - [ ] Standard Input
 - [ ] Clipboard
-- [ ] Web Link  
+- [ ] Web Link
 
 #### And generate a QR code of
 - [ ] The Raw Data
-- [ ] The [Base64](https://en.wikipedia.org/wiki/Base64)-encoded Data
 - [ ] Link of the Uploaded Data
 
 #### Then
 - [ ] Display it to the terminal.
 - [ ] Export image of it to the file.
 
-> **NOTE**:
-> - [ ] is unimplemented, and
-> - [x] is implemented.
 ## Installation
 #### Build from source
 Run it from the terminal: (requires [Cargo](https://github.com/rust-lang/cargo))

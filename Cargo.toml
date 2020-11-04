@@ -17,4 +17,5 @@ include = [
 ]
 
 [dependencies]
+colored = "2.0"
 qrcode = "0.12.0"

@@ -15,7 +15,7 @@ Qool can
 - [ ] Link of the Uploaded Data
 
 #### Then
-- [ ] Display it to the terminal.
+- [x] Display it to the terminal.
 - [ ] Export image of it to the file.
 
 ## Installation

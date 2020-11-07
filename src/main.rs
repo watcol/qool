@@ -35,5 +35,8 @@ fn main() {
 
     let code = QrCode::new(opts.input).unwrap();
     let s = code.output(Format::Term);
-    stdout().write(&s).expect("Failed to write.");
+    stdout().write(&s).unwrap_or_else(|e| {
+        log::error!("{}", e);
+        std::process::exit(1);
+    });
 }

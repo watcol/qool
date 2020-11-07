@@ -1,3 +1,5 @@
+extern crate colored;
+
 use qrcode::QrCode;
 
 /// The output formats.

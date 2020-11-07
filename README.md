@@ -6,7 +6,7 @@ Qool can
 #### Read the data from
 - [x] Plain Text
 - [ ] File
-- [ ] Standard Input
+- [x] Standard Input
 - [ ] Clipboard
 - [ ] Web Link
 

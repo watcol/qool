@@ -1,6 +1,7 @@
 extern crate selog;
 
 use crate::{Format, Source, Target};
+use std::path::Path;
 
 selog::opts! {
     #[derive(Clone, Debug, PartialEq, Eq)]
@@ -35,18 +36,17 @@ impl From<ClapOpts> for Opts {
             }
             #[allow(unreachable_patterns)]
             (_, None, None) => (Format::Png, Target::File("a.png".to_string())),
-            (_, Some(s), None) if s.ends_with(".png") || s.ends_with(".PNG") => {
-                (Format::Png, Target::File(s))
-            }
-            (_, Some(s), None)
-                if s.ends_with(".jpeg")
-                    || s.ends_with(".JPEG")
-                    || s.ends_with(".jpg")
-                    || s.ends_with(".JPG") =>
-            {
-                (Format::Jpeg, Target::File(s))
-            }
-            (_, Some(s), None) => (Format::Png, Target::File(s)),
+            (_, Some(s), None) => (
+                match Path::new(&s).extension().map(|i| i.to_str()).flatten() {
+                    Some("png") | Some("PNG") => Format::Png,
+                    Some("jpg") | Some("JPG") | Some("jpeg") | Some("JPEG") => Format::Jpeg,
+                    Some("gif") | Some("GIF") => Format::Gif,
+                    Some("bmp") | Some("BMP") => Format::Bmp,
+                    Some("ico") | Some("ICO") => Format::Ico,
+                    _ => Format::Png,
+                },
+                Target::File(s),
+            ),
             (_, None, Some(f @ Format::Term)) => (f, Target::Stdout),
             (_, None, Some(f @ _)) => (f.clone(), Target::File(format!("a.{}", f))),
             (_, Some(s), Some(f)) => (f, Target::File(s)),

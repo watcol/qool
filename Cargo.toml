@@ -17,5 +17,6 @@ include = [
 ]
 
 [dependencies]
+clap = "3.0.0-beta"
 colored = "2.0"
 qrcode = "0.12.0"

@@ -22,3 +22,8 @@ clap = "3.0.0-beta"
 colored = "2.0"
 selog = { version = "0.1.1-beta", features = ["opts"] }
 log = "0.4.11"
+
+[dependencies.image]
+version = "0.23.11"
+default_features = false
+features = ["png"]

@@ -1,13 +1,13 @@
 extern crate selog;
 
-use crate::{Format, Target, Source};
+use crate::{Format, Source, Target};
 
 selog::opts! {
     #[derive(Clone, Debug, PartialEq, Eq)]
     struct ClapOpts {
-        #[clap(long, short = 'F', about = "The output format.", possible_values = Format::VARIANTS,
-               default_value = "term")]
-        format: Format,
+        #[clap(long, short = 'F', about = "The output format.",
+               possible_values = Format::VARIANTS)]
+        format: Option<Format>,
         #[clap(long, short, about = "The output file.")]
         output: Option<String>,
         #[clap(short, long, about = "The string to convert to QR code.")]
@@ -25,10 +25,45 @@ pub struct Opts {
 
 impl From<ClapOpts> for Opts {
     fn from(opts: ClapOpts) -> Self {
+        let opt_format = opts.format;
+        let output = opts.output;
+        let source = Source::new(opts.text);
+
+        let format;
+        let target;
+
+        match (source.clone(), output, opt_format) {
+            (Source::Text(_), None, None) | (Source::Stdin, None, None) => {
+                format = Format::Term;
+                target = Target::Stdout;
+            }
+            #[allow(unreachable_patterns)]
+            (_, None, None) => {
+                format = Format::Png;
+                target = Target::File("a.png".to_string());
+            }
+            (_, Some(s), None) => {
+                format = Format::Png;
+                target = Target::File(s);
+            }
+            (_, None, Some(f @ Format::Term)) => {
+                format = f;
+                target = Target::Stdout;
+            }
+            (_, None, Some(f @ _)) => {
+                format = f.clone();
+                target = Target::File(format!("a.{}", f));
+            }
+            (_, Some(s), Some(f)) => {
+                format = f;
+                target = Target::File(s);
+            }
+        }
+
         Self {
-            format: opts.format,
-            target: opts.output.into(),
-            source: Source::new(opts.text),
+            format,
+            target,
+            source,
         }
     }
 }

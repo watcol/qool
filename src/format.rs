@@ -30,12 +30,12 @@ impl Format {
     pub const VARIANTS: &'static [&'static str] = &["term"];
 }
 
-pub trait Output {
-    fn output(self, f: Format) -> Vec<u8>;
+pub trait QoolRender {
+    fn qool_render(self, f: Format) -> Vec<u8>;
 }
 
-impl Output for QrCode {
-    fn output(self, f: Format) -> Vec<u8> {
+impl QoolRender for QrCode {
+    fn qool_render(self, f: Format) -> Vec<u8> {
         match f {
             Format::Term => term(self).into_bytes(),
         }

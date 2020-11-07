@@ -1,17 +1,17 @@
 extern crate selog;
 
-use crate::{Format, Target};
+use crate::{Format, Target, Source};
 
 selog::opts! {
     #[derive(Clone, Debug, PartialEq, Eq)]
     struct ClapOpts {
-        #[clap(long, short = 'F', about = "The output format", possible_values = Format::VARIANTS,
+        #[clap(long, short = 'F', about = "The output format.", possible_values = Format::VARIANTS,
                default_value = "term")]
         format: Format,
         #[clap(long, short, about = "The output file.")]
         output: Option<String>,
         #[clap(short, long, about = "The string to convert to QR code.")]
-        text: String
+        text: Option<String>
     }
 }
 
@@ -19,7 +19,7 @@ selog::opts! {
 pub struct Opts {
     pub format: Format,
     pub target: Target,
-    pub text: String,
+    pub source: Source,
 }
 
 impl From<ClapOpts> for Opts {
@@ -27,7 +27,7 @@ impl From<ClapOpts> for Opts {
         Self {
             format: opts.format,
             target: opts.output.into(),
-            text: opts.text,
+            source: Source::new(opts.text),
         }
     }
 }
@@ -39,7 +39,7 @@ pub fn init() -> Opts {
 
     let opts = Opts::from(opts);
 
-    log::debug!("Output string: {}", opts.text);
+    log::debug!("Source: {}", opts.source);
     log::debug!("Output format: {}", opts.format);
     log::debug!("Output target: {}", opts.target);
 

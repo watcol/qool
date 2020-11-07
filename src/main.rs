@@ -4,18 +4,20 @@ extern crate qrcode;
 mod format;
 mod opts;
 mod output;
+mod source;
 
 use crate::{
     format::{Format, QoolRender},
     opts::init,
     output::{QoolWriter, Target},
+    source::Source,
 };
 use qrcode::QrCode;
 
 fn main() {
     let opts = init();
 
-    QrCode::new(opts.text)
+    QrCode::new(opts.source.into_bytes())
         .unwrap_or_else(|e| {
             log::error!("Failed to generate QR code: {}", e);
             std::process::exit(1);

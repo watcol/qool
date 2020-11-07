@@ -29,22 +29,14 @@ impl From<ClapOpts> for Opts {
         let output = opts.output;
         let source = Source::new(opts.text);
 
-        let format;
-        let target;
-
-        match (source.clone(), output, opt_format) {
+        let (format, target) = match (source.clone(), output, opt_format) {
             (Source::Text(_), None, None) | (Source::Stdin, None, None) => {
-                format = Format::Term;
-                target = Target::Stdout;
+                (Format::Term, Target::Stdout)
             }
             #[allow(unreachable_patterns)]
-            (_, None, None) => {
-                format = Format::Png;
-                target = Target::File("a.png".to_string());
-            }
+            (_, None, None) => (Format::Png, Target::File("a.png".to_string())),
             (_, Some(s), None) if s.ends_with(".png") || s.ends_with(".PNG") => {
-                format = Format::Png;
-                target = Target::File(s);
+                (Format::Png, Target::File(s))
             }
             (_, Some(s), None)
                 if s.ends_with(".jpeg")
@@ -52,26 +44,13 @@ impl From<ClapOpts> for Opts {
                     || s.ends_with(".jpg")
                     || s.ends_with(".JPG") =>
             {
-                format = Format::Jpeg;
-                target = Target::File(s);
+                (Format::Jpeg, Target::File(s))
             }
-            (_, Some(s), None) => {
-                format = Format::Png;
-                target = Target::File(s);
-            }
-            (_, None, Some(f @ Format::Term)) => {
-                format = f;
-                target = Target::Stdout;
-            }
-            (_, None, Some(f @ _)) => {
-                format = f.clone();
-                target = Target::File(format!("a.{}", f));
-            }
-            (_, Some(s), Some(f)) => {
-                format = f;
-                target = Target::File(s);
-            }
-        }
+            (_, Some(s), None) => (Format::Png, Target::File(s)),
+            (_, None, Some(f @ Format::Term)) => (f, Target::Stdout),
+            (_, None, Some(f @ _)) => (f.clone(), Target::File(format!("a.{}", f))),
+            (_, Some(s), Some(f)) => (f, Target::File(s)),
+        };
 
         Self {
             format,

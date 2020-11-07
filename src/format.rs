@@ -10,6 +10,8 @@ pub enum Format {
     Term,
     /// PNG image.
     Png,
+    /// JPEG image.
+    Jpeg,
 }
 
 impl std::str::FromStr for Format {
@@ -19,6 +21,7 @@ impl std::str::FromStr for Format {
         match s {
             "term" => Ok(Self::Term),
             "png" => Ok(Self::Png),
+            "jpeg" => Ok(Self::Jpeg),
             e => Err(format!("invalid string: {}", e)),
         }
     }
@@ -29,13 +32,14 @@ impl std::fmt::Display for Format {
         match self {
             Self::Term => write!(f, "term"),
             Self::Png => write!(f, "png"),
+            Self::Jpeg => write!(f, "jpeg"),
         }
     }
 }
 
 impl Format {
     /// List of formats.
-    pub const VARIANTS: &'static [&'static str] = &["term", "png"];
+    pub const VARIANTS: &'static [&'static str] = &["term", "png", "jpeg"];
 }
 
 /// Implement rendering with `Format` to `QRCode`.
@@ -48,6 +52,7 @@ impl QoolRender for QrCode {
         match f {
             Format::Term => term(self).into_bytes(),
             Format::Png => image(self, ImageOutputFormat::Png),
+            Format::Jpeg => image(self, ImageOutputFormat::Jpeg(85)),
         }
     }
 }

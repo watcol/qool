@@ -26,4 +26,4 @@ log = "0.4.11"
 [dependencies.image]
 version = "0.23.11"
 default_features = false
-features = ["png"]
+features = ["png", "jpeg"]

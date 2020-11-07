@@ -42,6 +42,19 @@ impl From<ClapOpts> for Opts {
                 format = Format::Png;
                 target = Target::File("a.png".to_string());
             }
+            (_, Some(s), None) if s.ends_with(".png") || s.ends_with(".PNG") => {
+                format = Format::Png;
+                target = Target::File(s);
+            }
+            (_, Some(s), None)
+                if s.ends_with(".jpeg")
+                    || s.ends_with(".JPEG")
+                    || s.ends_with(".jpg")
+                    || s.ends_with(".JPG") =>
+            {
+                format = Format::Jpeg;
+                target = Target::File(s);
+            }
             (_, Some(s), None) => {
                 format = Format::Png;
                 target = Target::File(s);

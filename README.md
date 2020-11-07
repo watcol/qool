@@ -4,14 +4,14 @@ Share your data via QR Code!
 ## Features
 Qool can
 #### Read the data from
-- [ ] Plain Text
+- [x] Plain Text
 - [ ] File
 - [ ] Standard Input
 - [ ] Clipboard
 - [ ] Web Link
 
 #### And generate a QR code of
-- [ ] The Raw Data
+- [x] The Raw Data
 - [ ] Link of the Uploaded Data
 
 #### Then

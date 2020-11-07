@@ -52,7 +52,7 @@ impl QoolRender for QrCode {
         match f {
             Format::Term => term(self).into_bytes(),
             Format::Png => image(self, ImageOutputFormat::Png),
-            Format::Jpeg => image(self, ImageOutputFormat::Jpeg(85)),
+            Format::Jpeg => image(self, ImageOutputFormat::Jpeg(0)),
         }
     }
 }

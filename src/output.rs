@@ -3,9 +3,12 @@ use std::fs::File;
 use std::io::{self, Write};
 use std::ops::Deref;
 
+/// The output target.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Target {
+    /// Standard Output
     Stdout,
+    /// A File
     File(String),
 }
 
@@ -27,6 +30,7 @@ impl From<Option<String>> for Target {
     }
 }
 
+/// Implement writing to `Target` to `[u8]`, `&[u8]`, and `Vec<u8>`.
 pub trait QoolWriter {
     fn qool_write(self, target: Target);
 }

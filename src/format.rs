@@ -29,9 +29,11 @@ impl std::fmt::Display for Format {
 }
 
 impl Format {
+    /// List of formats.
     pub const VARIANTS: &'static [&'static str] = &["term"];
 }
 
+/// Implement rendering with `Format` to `QRCode`.
 pub trait QoolRender {
     fn qool_render(self, f: Format) -> Vec<u8>;
 }

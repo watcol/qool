@@ -15,6 +15,7 @@ selog::opts! {
     }
 }
 
+/// Configuration with the application.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Opts {
     pub format: Format,

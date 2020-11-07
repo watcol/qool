@@ -1,8 +1,11 @@
 use std::fmt;
 
+/// The Data Source
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Source {
+    /// The text from the arguments.
     Text(String),
+    /// Read from the standard input.
     Stdin,
 }
 
@@ -16,6 +19,7 @@ impl fmt::Display for Source {
 }
 
 impl Source {
+    /// Create `Source` with the arguments.
     pub fn new(text: Option<String>) -> Self {
         if let Some(t) = text {
             Self::Text(t)
@@ -24,6 +28,7 @@ impl Source {
         }
     }
 
+    /// Yield `Vec<u8>` from `Source`.
     pub fn into_bytes(self) -> Vec<u8> {
         match self {
             Self::Text(s) => text(s),

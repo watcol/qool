@@ -1,7 +1,7 @@
 extern crate colored;
+extern crate log;
 extern crate qrcode;
 extern crate selog;
-extern crate log;
 
 mod format;
 

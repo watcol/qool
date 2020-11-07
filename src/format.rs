@@ -26,6 +26,10 @@ impl std::fmt::Display for Format {
     }
 }
 
+impl Format {
+    pub const VARIANTS: &'static [&'static str] = &["term"];
+}
+
 pub trait Output {
     fn output(self, f: Format) -> Vec<u8>;
 }

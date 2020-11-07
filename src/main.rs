@@ -1,30 +1,31 @@
 extern crate colored;
 extern crate qrcode;
-#[macro_use]
-extern crate clap;
+extern crate selog;
+extern crate log;
 
 mod format;
 
 use crate::format::{Format, Output};
 use qrcode::QrCode;
 use std::io::{stdout, Write};
-use clap::Clap;
 
-#[derive(Clone, Debug, PartialEq, Eq, Clap)]
-#[clap(version = crate_version!(), author = crate_authors!(), about = crate_description!())]
-struct Opts {
-    #[clap(about = "The string to convert to QR code.", default_value = "Hello, World!")]
-    input: String
+selog::opts! {
+    #[derive(Clone, Debug, PartialEq, Eq)]
+    struct Opts {
+        #[clap(about = "The string to convert to QR code.", default_value = "Hello, World!")]
+        input: String
+    }
 }
 
 /// Initialize the application.
 fn init() -> Opts {
     let opts = Opts::parse();
+    opts.init_log().expect("Failed to initialize logger.");
 
-    println!("Output string: {}", opts.input);
-    println!("Output format: {}", Format::Term);
-    println!("Output target: {}", "<stdout>");
-    println!();
+    log::debug!("Output string: {}", opts.input);
+    log::debug!("Output format: {}", Format::Term);
+    log::debug!("Output target: {}", "<stdout>");
+    log::debug!("");
 
     opts
 }

@@ -1,12 +1,12 @@
-use std::io::{self, Write};
-use std::fs::File;
 use std::fmt;
+use std::fs::File;
+use std::io::{self, Write};
 use std::ops::Deref;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Target {
     Stdout,
-    File(String)
+    File(String),
 }
 
 impl fmt::Display for Target {
@@ -31,12 +31,13 @@ pub trait QoolWriter {
     fn qool_write(self, target: Target);
 }
 
-impl<T: Deref<Target=[u8]>> QoolWriter for T {
+impl<T: Deref<Target = [u8]>> QoolWriter for T {
     fn qool_write(self, target: Target) {
         match target {
             Target::Stdout => stdout(&self),
-            Target::File(path) => file(path, &self)
-        }.unwrap_or_else(|e| {
+            Target::File(path) => file(path, &self),
+        }
+        .unwrap_or_else(|e| {
             log::error!("{}", e);
             std::process::exit(e.raw_os_error().unwrap_or(1));
         });

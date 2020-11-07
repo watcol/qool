@@ -8,13 +8,18 @@ mod output;
 use crate::{
     format::{Format, QoolRender},
     opts::init,
-    output::{Target, QoolWriter},
+    output::{QoolWriter, Target},
 };
 use qrcode::QrCode;
 
 fn main() {
     let opts = init();
 
-    let code = QrCode::new(opts.text).unwrap();
-    code.qool_render(opts.format).qool_write(opts.target);
+    QrCode::new(opts.text)
+        .unwrap_or_else(|e| {
+            log::error!("Failed to generate QR code: {}", e);
+            std::process::exit(1);
+        })
+        .qool_render(opts.format)
+        .qool_write(opts.target);
 }

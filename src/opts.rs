@@ -42,6 +42,7 @@ impl From<ClapOpts> for Opts {
                     Some("jpg") | Some("JPG") | Some("jpeg") | Some("JPEG") => Format::Jpeg,
                     Some("gif") | Some("GIF") => Format::Gif,
                     Some("bmp") | Some("BMP") => Format::Bmp,
+                    Some("svg") | Some("SVG") => Format::Svg,
                     _ => Format::Png,
                 },
                 Target::File(s),

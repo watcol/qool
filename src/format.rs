@@ -16,6 +16,8 @@ pub enum Format {
     Gif,
     /// BMP image.
     Bmp,
+    /// SVG image.
+    Svg,
 }
 
 impl std::str::FromStr for Format {
@@ -28,6 +30,7 @@ impl std::str::FromStr for Format {
             "jpeg" => Ok(Self::Jpeg),
             "gif" => Ok(Self::Gif),
             "bmp" => Ok(Self::Bmp),
+            "svg" => Ok(Self::Svg),
             e => Err(format!("invalid string: {}", e)),
         }
     }
@@ -41,13 +44,14 @@ impl std::fmt::Display for Format {
             Self::Jpeg => write!(f, "jpeg"),
             Self::Gif => write!(f, "gif"),
             Self::Bmp => write!(f, "bmp"),
+            Self::Svg => write!(f, "svg"),
         }
     }
 }
 
 impl Format {
     /// List of formats.
-    pub const VARIANTS: &'static [&'static str] = &["term", "png", "jpeg", "gif", "bmp"];
+    pub const VARIANTS: &'static [&'static str] = &["term", "png", "jpeg", "gif", "bmp", "svg"];
 }
 
 /// Implement rendering with `Format` to `QRCode`.
@@ -63,6 +67,7 @@ impl QoolRender for QrCode {
             Format::Jpeg => image(self, ImageOutputFormat::Jpeg(0)),
             Format::Gif => image(self, ImageOutputFormat::Gif),
             Format::Bmp => image(self, ImageOutputFormat::Bmp),
+            Format::Svg => svg(self).into_bytes(),
         }
     }
 }
@@ -87,4 +92,8 @@ fn image(code: QrCode, format: ImageOutputFormat) -> Vec<u8> {
     });
 
     bytes
+}
+
+fn svg(code: QrCode) -> String {
+    code.render::<qrcode::render::svg::Color>().build()
 }

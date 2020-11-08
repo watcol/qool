@@ -20,7 +20,7 @@ fn main() {
     let opts = init();
 
     let source = opts.source.into_bytes();
-    log::debug!("Source Buffer: {:?}", ByteStr::new(&source));
+    log::trace!("Source Buffer: {:?}", ByteStr::new(&source));
 
     QrCode::new(source)
         .unwrap_or_else(|e| {

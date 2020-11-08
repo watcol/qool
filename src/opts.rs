@@ -6,15 +6,15 @@ use std::path::Path;
 selog::opts! {
     #[derive(Clone, Debug, PartialEq, Eq)]
     struct ClapOpts {
-        #[clap(long, short = 'F', about = "The output format.",
+        #[clap(long, short, about = "The output format.",
                possible_values = Format::VARIANTS)]
         format: Option<Format>,
         #[clap(long, short, about = "The output file.")]
         output: Option<String>,
-        #[clap(short, long, about = "The string to convert to QR code.",
+        #[clap(long, short = 'T', about = "The string to convert to QR code.",
                conflicts_with = "file")]
         text: Option<String>,
-        #[clap(long, short, about = "The input file.",
+        #[clap(long, short = 'F', about = "The input file.",
                conflicts_with = "text")]
         file: Option<String>
     }

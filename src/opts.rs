@@ -13,11 +13,14 @@ selog::opts! {
         #[clap(long, short, about = "The output file.")]
         output: Option<String>,
         #[clap(long, short = 'T', about = "The string to convert to QR code.",
-               conflicts_with = "file")]
+               conflicts_with_all = &["file", "clipboard"])]
         text: Option<String>,
         #[clap(long, short = 'F', about = "The input file.",
-               conflicts_with = "text")]
-        file: Option<String>
+               conflicts_with_all = &["text", "clipboard"])]
+        file: Option<String>,
+        #[clap(long, short = 'C', about = "Read from clipboard.",
+               conflicts_with_all = &["text", "file"])]
+        clipboard: bool
     }
 }
 
@@ -33,7 +36,7 @@ impl From<ClapOpts> for Opts {
     fn from(opts: ClapOpts) -> Self {
         let opt_format = opts.format;
         let output = opts.output;
-        let source = Source::new(opts.text, opts.file);
+        let source = Source::new(opts.text, opts.file, opts.clipboard);
 
         let (format, target) = match (source.clone(), output, opt_format) {
             (Source::File(_), None, None) | (Source::Redirected, None, None) => {

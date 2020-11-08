@@ -1,4 +1,5 @@
 extern crate atty;
+extern crate clipboard;
 
 use std::fmt;
 
@@ -9,6 +10,8 @@ pub enum Source {
     Text(String),
     /// The input file.
     File(String),
+    /// Read from Clipboard.
+    Clipboard,
     /// Read from the standard input.
     Stdin,
     /// Redirected standard input.
@@ -20,18 +23,21 @@ impl fmt::Display for Source {
         match self {
             Source::Text(s) => write!(f, "{:?}", s),
             Source::File(s) => write!(f, "{}", s),
-            Source::Stdin | Source::Redirected => write!(f, "<stdin>")
+            Source::Stdin | Source::Redirected => write!(f, "<stdin>"),
+            Source::Clipboard => write!(f, "<clipboard>"),
         }
     }
 }
 
 impl Source {
     /// Create `Source` with the arguments.
-    pub fn new(text: Option<String>, file: Option<String>) -> Self {
+    pub fn new(text: Option<String>, file: Option<String>, clipboard: bool) -> Self {
         if let Some(t) = text {
             Self::Text(t)
         } else if let Some(f) = file {
             Self::File(f)
+        } else if clipboard {
+            Self::Clipboard
         } else if atty::is(atty::Stream::Stdin) {
             Self::Stdin
         } else {
@@ -44,9 +50,14 @@ impl Source {
         match self {
             Self::Text(s) => Ok(text(s)),
             Self::File(s) => file(s),
+            Self::Clipboard => Ok(clipboard().unwrap_or_else(|e| {
+                log::error!("Failed to read clipboard: {}", e);
+                std::process::exit(1);
+            })),
             Self::Stdin => stdin(),
             Self::Redirected => redirected(),
-        }.unwrap_or_else(|e| {
+        }
+        .unwrap_or_else(|e| {
             log::error!("Failed to read: {}", e);
             std::process::exit(e.raw_os_error().unwrap_or(1));
         })
@@ -64,6 +75,11 @@ fn file(s: String) -> std::io::Result<Vec<u8>> {
     let mut buf = Vec::new();
     File::open(s)?.read_to_end(&mut buf)?;
     Ok(buf)
+}
+
+fn clipboard() -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    use clipboard::{ClipboardContext, ClipboardProvider};
+    Ok(ClipboardContext::new()?.get_contents()?.into_bytes())
 }
 
 fn stdin() -> std::io::Result<Vec<u8>> {

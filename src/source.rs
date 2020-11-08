@@ -75,7 +75,7 @@ fn stdin() -> std::io::Result<Vec<u8>> {
     let mut s = String::new();
     io::stdin().read_line(&mut s)?;
 
-    Ok(s.into_bytes())
+    Ok(s.trim().as_bytes().to_vec())
 }
 
 fn redirected() -> std::io::Result<Vec<u8>> {

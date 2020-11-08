@@ -25,6 +25,8 @@ log = "0.4.11"
 atty = "0.2.14"
 clipboard = "0.5.0"
 byte_string = "1.0"
+reqwest = "0.10.8"
+tokio = "0.2.22"
 
 [dependencies.image]
 version = "0.23.11"

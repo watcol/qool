@@ -1,5 +1,6 @@
 extern crate atty;
 extern crate clipboard;
+extern crate reqwest;
 
 use std::fmt;
 
@@ -12,6 +13,8 @@ pub enum Source {
     File(String),
     /// Read from Clipboard.
     Clipboard,
+    /// Link of the web pages.
+    Link(String),
     /// Read from the standard input.
     Stdin,
     /// Redirected standard input.
@@ -23,21 +26,25 @@ impl fmt::Display for Source {
         match self {
             Source::Text(s) => write!(f, "{:?}", s),
             Source::File(s) => write!(f, "{}", s),
-            Source::Stdin | Source::Redirected => write!(f, "<stdin>"),
             Source::Clipboard => write!(f, "<clipboard>"),
+            Source::Link(s) => write!(f, "{}", s),
+            Source::Stdin | Source::Redirected => write!(f, "<stdin>"),
         }
     }
 }
 
 impl Source {
     /// Create `Source` with the arguments.
-    pub fn new(text: Option<String>, file: Option<String>, clipboard: bool) -> Self {
+    pub fn new(text: Option<String>, file: Option<String>, clipboard: bool, link: Option<String>)
+        -> Self {
         if let Some(t) = text {
             Self::Text(t)
         } else if let Some(f) = file {
             Self::File(f)
         } else if clipboard {
             Self::Clipboard
+        } else if let Some(l) = link {
+            Self::Link(l)
         } else if atty::is(atty::Stream::Stdin) {
             Self::Stdin
         } else {
@@ -52,6 +59,10 @@ impl Source {
             Self::File(s) => file(s),
             Self::Clipboard => Ok(clipboard().unwrap_or_else(|e| {
                 log::error!("Failed to read clipboard: {}", e);
+                std::process::exit(1);
+            })),
+            Self::Link(s) => Ok(link(s).unwrap_or_else(|e| {
+                log::error!("Failed to fetch link: {}", e);
                 std::process::exit(1);
             })),
             Self::Stdin => stdin(),
@@ -80,6 +91,23 @@ fn file(s: String) -> std::io::Result<Vec<u8>> {
 fn clipboard() -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     use clipboard::{ClipboardContext, ClipboardProvider};
     Ok(ClipboardContext::new()?.get_contents()?.into_bytes())
+}
+
+fn link(s: String) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    tokio::runtime::Runtime::new()?.block_on(fetch(s))
+}
+
+async fn fetch(s: String) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    use std::io::Write;
+
+    let mut res = reqwest::get(&s).await?;
+    let mut buf = Vec::new();
+
+    while let Some(chunk) = res.chunk().await? {
+        buf.write(&chunk)?;
+    }
+
+    Ok(buf)
 }
 
 fn stdin() -> std::io::Result<Vec<u8>> {

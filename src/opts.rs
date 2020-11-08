@@ -13,14 +13,17 @@ selog::opts! {
         #[clap(long, short, about = "The output file.")]
         output: Option<String>,
         #[clap(long, short = 'T', about = "The string to convert to QR code.",
-               conflicts_with_all = &["file", "clipboard"])]
+               conflicts_with_all = &["file", "clipboard", "link"])]
         text: Option<String>,
         #[clap(long, short = 'F', about = "The input file.",
-               conflicts_with_all = &["text", "clipboard"])]
+               conflicts_with_all = &["text", "clipboard", "link"])]
         file: Option<String>,
         #[clap(long, short = 'C', about = "Read from clipboard.",
-               conflicts_with_all = &["text", "file"])]
-        clipboard: bool
+               conflicts_with_all = &["text", "file", "link"])]
+        clipboard: bool,
+        #[clap(long, short = 'L', about = "The web url to fetch from.",
+               conflicts_with_all = &["text", "file", "clipboard"])]
+        link: Option<String>
     }
 }
 
@@ -36,12 +39,12 @@ impl From<ClapOpts> for Opts {
     fn from(opts: ClapOpts) -> Self {
         let opt_format = opts.format;
         let output = opts.output;
-        let source = Source::new(opts.text, opts.file, opts.clipboard);
+        let source = Source::new(opts.text, opts.file, opts.clipboard, opts.link);
 
         let (format, target) = match (source.clone(), output, opt_format) {
-            (Source::File(_), None, None) | (Source::Redirected, None, None) => {
-                (Format::Png, Target::File("a.png".to_string()))
-            }
+            (Source::File(_), None, None)
+            | (Source::Redirected, None, None)
+            | (Source::Link(_), None, None) => (Format::Png, Target::File("a.png".to_string())),
             (_, None, None) if atty::is(atty::Stream::Stdout) => (Format::Term, Target::Stdout),
             (_, None, None) => (Format::Png, Target::Stdout),
             (_, Some(s), None) => (

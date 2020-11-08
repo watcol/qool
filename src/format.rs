@@ -16,8 +16,6 @@ pub enum Format {
     Gif,
     /// BMP image.
     Bmp,
-    /// ICO image.
-    Ico,
 }
 
 impl std::str::FromStr for Format {
@@ -30,7 +28,6 @@ impl std::str::FromStr for Format {
             "jpeg" => Ok(Self::Jpeg),
             "gif" => Ok(Self::Gif),
             "bmp" => Ok(Self::Bmp),
-            "ico" => Ok(Self::Ico),
             e => Err(format!("invalid string: {}", e)),
         }
     }
@@ -44,14 +41,13 @@ impl std::fmt::Display for Format {
             Self::Jpeg => write!(f, "jpeg"),
             Self::Gif => write!(f, "gif"),
             Self::Bmp => write!(f, "bmp"),
-            Self::Ico => write!(f, "ico"),
         }
     }
 }
 
 impl Format {
     /// List of formats.
-    pub const VARIANTS: &'static [&'static str] = &["term", "png", "jpeg", "gif", "bmp", "ico"];
+    pub const VARIANTS: &'static [&'static str] = &["term", "png", "jpeg", "gif", "bmp"];
 }
 
 /// Implement rendering with `Format` to `QRCode`.
@@ -67,7 +63,6 @@ impl QoolRender for QrCode {
             Format::Jpeg => image(self, ImageOutputFormat::Jpeg(0)),
             Format::Gif => image(self, ImageOutputFormat::Gif),
             Format::Bmp => image(self, ImageOutputFormat::Bmp),
-            Format::Ico => image(self, ImageOutputFormat::Ico),
         }
     }
 }

@@ -15,6 +15,12 @@ impl Default for Stream {
     }
 }
 
+impl From<Option<String>> for Stream {
+    fn from(from: Option<String>) -> Self {
+        from.map(|s| Self::File(s)).unwrap_or_default()
+    }
+}
+
 impl fmt::Display for Stream {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -25,14 +31,17 @@ impl fmt::Display for Stream {
 }
 
 impl Stream {
-    pub fn name(&self) -> String {
+    fn name(&self) -> String {
         match self {
             Self::File(path) => path.clone(),
             Self::Stdin => "file".to_string(),
         }
     }
 
-    pub fn copy<T: AsRef<Path>>(&self, path2: T) -> io::Result<()> {
+    /// Copy to the directory.
+    pub fn copy<T: AsRef<Path>>(&self, dir: T) -> io::Result<()> {
+        let path2 = dir.as_ref().join(self.name());
+
         match self {
             Self::File(path) => {fs::copy(path, path2)?;},
             Self::Stdin => {

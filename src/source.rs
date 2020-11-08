@@ -1,3 +1,5 @@
+extern crate atty;
+
 use std::fmt;
 
 /// The Data Source
@@ -9,6 +11,8 @@ pub enum Source {
     File(String),
     /// Read from the standard input.
     Stdin,
+    /// Redirected standard input.
+    Redirected,
 }
 
 impl fmt::Display for Source {
@@ -16,7 +20,7 @@ impl fmt::Display for Source {
         match self {
             Source::Text(s) => write!(f, "{:?}", s),
             Source::File(s) => write!(f, "{}", s),
-            Source::Stdin => write!(f, "<stdin>")
+            Source::Stdin | Source::Redirected => write!(f, "<stdin>")
         }
     }
 }
@@ -28,8 +32,10 @@ impl Source {
             Self::Text(t)
         } else if let Some(f) = file {
             Self::File(f)
-        } else {
+        } else if atty::is(atty::Stream::Stdin) {
             Self::Stdin
+        } else {
+            Self::Redirected
         }
     }
 
@@ -39,6 +45,7 @@ impl Source {
             Self::Text(s) => Ok(text(s)),
             Self::File(s) => file(s),
             Self::Stdin => stdin(),
+            Self::Redirected => redirected(),
         }.unwrap_or_else(|e| {
             log::error!("Failed to read: {}", e);
             std::process::exit(e.raw_os_error().unwrap_or(1));
@@ -62,11 +69,20 @@ fn file(s: String) -> std::io::Result<Vec<u8>> {
 fn stdin() -> std::io::Result<Vec<u8>> {
     use std::io::{self, Write};
 
-    print!("Text to convert: ");
-    io::stdout().flush()?;
+    eprint!("Text to convert: ");
+    io::stderr().flush()?;
 
     let mut s = String::new();
     io::stdin().read_line(&mut s)?;
 
     Ok(s.into_bytes())
+}
+
+fn redirected() -> std::io::Result<Vec<u8>> {
+    use std::io::{self, Read};
+
+    let mut buf = Vec::new();
+    io::stdin().read_to_end(&mut buf)?;
+
+    Ok(buf)
 }

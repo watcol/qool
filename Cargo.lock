@@ -332,6 +332,7 @@ dependencies = [
 name = "qool"
 version = "0.0.1"
 dependencies = [
+ "atty",
  "clap",
  "colored",
  "image",

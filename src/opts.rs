@@ -1,3 +1,4 @@
+extern crate atty;
 extern crate selog;
 
 use crate::{Format, Source, Target};
@@ -35,8 +36,11 @@ impl From<ClapOpts> for Opts {
         let source = Source::new(opts.text, opts.file);
 
         let (format, target) = match (source.clone(), output, opt_format) {
-            (Source::File(_), None, None) => (Format::Png, Target::File("a.png".to_string())),
-            (_, None, None) => (Format::Term, Target::Stdout),
+            (Source::File(_), None, None) | (Source::Redirected, None, None) => {
+                (Format::Png, Target::File("a.png".to_string()))
+            }
+            (_, None, None) if atty::is(atty::Stream::Stdout) => (Format::Term, Target::Stdout),
+            (_, None, None) => (Format::Png, Target::Stdout),
             (_, Some(s), None) => (
                 match Path::new(&s).extension().map(|i| i.to_str()).flatten() {
                     Some("png") | Some("PNG") => Format::Png,

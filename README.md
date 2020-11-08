@@ -1,33 +1,18 @@
 # Qool
 Share your data via QR Code!
 
-## Features
-Qool can
-#### Read the data from
-- [x] Plain Text
-- [ ] File
-- [x] Standard Input
-- [ ] Clipboard
-- [ ] Web Link
-
-#### And generate a QR code of
-- [x] The Raw Data
-- [ ] Link of the Uploaded Data
-
-#### Then
-- [x] Display it to the terminal.
-- [ ] Export image of it to the file.
+## Usage
+```shell
+$ qool [file]
+```
+and read the qrcode by your phone, you can download the file!
 
 ## Installation
-#### Build from source
+#### Stable Version (Coming soon...)
+#### Development Version
 Run it from the terminal: (requires [Cargo](https://github.com/rust-lang/cargo))
 ```shell
 $ cargo install --branch=main --git https://github.com/watcol/qool
-```
-
-## Usage
-```shell
-$ qool
 ```
 
 ## License

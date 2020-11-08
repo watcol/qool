@@ -15,20 +15,3 @@ include = [
   "Cargo.toml",
   "src/**/*.rs"
 ]
-
-[dependencies]
-qrcode = "0.12.0"
-clap = "3.0.0-beta"
-colored = "2.0"
-selog = { version = "0.1.1-beta", features = ["opts"] }
-log = "0.4.11"
-atty = "0.2.14"
-clipboard = "0.5.0"
-byte_string = "1.0"
-reqwest = "0.10.8"
-tokio = "0.2.22"
-
-[dependencies.image]
-version = "0.23.11"
-default_features = false
-features = ["png", "jpeg", "gif", "bmp", "ico"]

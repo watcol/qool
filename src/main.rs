@@ -1,5 +1,6 @@
 extern crate log;
 extern crate qrcode;
+extern crate byte_string;
 
 mod format;
 mod opts;
@@ -13,11 +14,15 @@ use crate::{
     source::Source,
 };
 use qrcode::QrCode;
+use byte_string::ByteStr;
 
 fn main() {
     let opts = init();
 
-    QrCode::new(opts.source.into_bytes())
+    let source = opts.source.into_bytes();
+    log::debug!("Source Buffer: {:?}", ByteStr::new(&source));
+
+    QrCode::new(source)
         .unwrap_or_else(|e| {
             log::error!("Failed to generate QR code: {}", e);
             std::process::exit(1);

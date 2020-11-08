@@ -5,6 +5,8 @@ use std::fmt;
 pub enum Source {
     /// The text from the arguments.
     Text(String),
+    /// The input file.
+    File(String),
     /// Read from the standard input.
     Stdin,
 }
@@ -13,6 +15,7 @@ impl fmt::Display for Source {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Source::Text(s) => write!(f, "{:?}", s),
+            Source::File(s) => write!(f, "{}", s),
             Source::Stdin => write!(f, "<stdin>")
         }
     }
@@ -20,9 +23,11 @@ impl fmt::Display for Source {
 
 impl Source {
     /// Create `Source` with the arguments.
-    pub fn new(text: Option<String>) -> Self {
+    pub fn new(text: Option<String>, file: Option<String>) -> Self {
         if let Some(t) = text {
             Self::Text(t)
+        } else if let Some(f) = file {
+            Self::File(f)
         } else {
             Self::Stdin
         }
@@ -31,17 +36,27 @@ impl Source {
     /// Yield `Vec<u8>` from `Source`.
     pub fn into_bytes(self) -> Vec<u8> {
         match self {
-            Self::Text(s) => text(s),
-            Self::Stdin => stdin().unwrap_or_else(|e| {
-                log::error!("{}", e);
-                std::process::exit(e.raw_os_error().unwrap_or(1));
-            }),
-        }
+            Self::Text(s) => Ok(text(s)),
+            Self::File(s) => file(s),
+            Self::Stdin => stdin(),
+        }.unwrap_or_else(|e| {
+            log::error!("Failed to read: {}", e);
+            std::process::exit(e.raw_os_error().unwrap_or(1));
+        })
     }
 }
 
 fn text(s: String) -> Vec<u8> {
     s.into_bytes()
+}
+
+fn file(s: String) -> std::io::Result<Vec<u8>> {
+    use std::fs::File;
+    use std::io::Read;
+
+    let mut buf = Vec::new();
+    File::open(s)?.read_to_end(&mut buf)?;
+    Ok(buf)
 }
 
 fn stdin() -> std::io::Result<Vec<u8>> {

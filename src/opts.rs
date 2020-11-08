@@ -11,8 +11,12 @@ selog::opts! {
         format: Option<Format>,
         #[clap(long, short, about = "The output file.")]
         output: Option<String>,
-        #[clap(short, long, about = "The string to convert to QR code.")]
-        text: Option<String>
+        #[clap(short, long, about = "The string to convert to QR code.",
+               conflicts_with = "file")]
+        text: Option<String>,
+        #[clap(long, short, about = "The input file.",
+               conflicts_with = "text")]
+        file: Option<String>
     }
 }
 
@@ -28,14 +32,11 @@ impl From<ClapOpts> for Opts {
     fn from(opts: ClapOpts) -> Self {
         let opt_format = opts.format;
         let output = opts.output;
-        let source = Source::new(opts.text);
+        let source = Source::new(opts.text, opts.file);
 
         let (format, target) = match (source.clone(), output, opt_format) {
-            (Source::Text(_), None, None) | (Source::Stdin, None, None) => {
-                (Format::Term, Target::Stdout)
-            }
-            #[allow(unreachable_patterns)]
-            (_, None, None) => (Format::Png, Target::File("a.png".to_string())),
+            (Source::File(_), None, None) => (Format::Png, Target::File("a.png".to_string())),
+            (_, None, None) => (Format::Term, Target::Stdout),
             (_, Some(s), None) => (
                 match Path::new(&s).extension().map(|i| i.to_str()).flatten() {
                     Some("png") | Some("PNG") => Format::Png,

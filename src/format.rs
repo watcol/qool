@@ -38,14 +38,14 @@ impl std::str::FromStr for Format {
 
 impl std::fmt::Display for Format {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match self {
-            Self::Term => write!(f, "term"),
-            Self::Png => write!(f, "png"),
-            Self::Jpeg => write!(f, "jpeg"),
-            Self::Gif => write!(f, "gif"),
-            Self::Bmp => write!(f, "bmp"),
-            Self::Svg => write!(f, "svg"),
-        }
+        write!(f, "{}", match self {
+            Self::Term => "term",
+            Self::Png => "png",
+            Self::Jpeg => "jpeg",
+            Self::Gif => "gif",
+            Self::Bmp => "bmp",
+            Self::Svg => "svg",
+        })
     }
 }
 

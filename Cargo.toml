@@ -20,3 +20,6 @@ include = [
 clap = "3.0.0-beta"
 log = "0.4.11"
 selog = { version = "0.1.1-beta", features = ["opts"] }
+tempfile = "3.1"
+iron = "0.6"
+staticfile = "0.5"

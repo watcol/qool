@@ -1,18 +1,19 @@
 #[macro_use]
 extern crate log;
-extern crate tempfile;
 extern crate iron;
-extern crate staticfile;
 extern crate local_ipaddress;
+extern crate qr2term;
+extern crate staticfile;
+extern crate tempfile;
 
 mod file;
 mod opts;
 
-use tempfile::tempdir;
-use iron::Iron;
-use staticfile::Static;
 use file::Stream;
+use iron::Iron;
 use opts::init;
+use staticfile::Static;
+use tempfile::tempdir;
 
 fn main() {
     inner_main().unwrap_or_else(|e| {
@@ -34,12 +35,19 @@ fn inner_main() -> std::io::Result<()> {
         std::process::exit(1);
     });
 
-    println!("http://{}:{}/{}", ip, opts.port, stream.name());
+    qr2term::print_qr(format!("http://{}:{}/{}", ip, opts.port, stream.name())).unwrap_or_else(
+        |e| {
+            error!("Failed to print QR code: {}", e);
+            std::process::exit(1);
+        },
+    );
 
-    Iron::new(Static::new(dir.path())).http((ip, opts.port)).unwrap_or_else(|e| {
-        error!("Failed to build server: {}", e);
-        std::process::exit(1);
-    });
+    Iron::new(Static::new(dir.path()))
+        .http((ip, opts.port))
+        .unwrap_or_else(|e| {
+            error!("Failed to build server: {}", e);
+            std::process::exit(1);
+        });
 
     Ok(())
 }

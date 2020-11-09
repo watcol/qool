@@ -3,6 +3,7 @@ extern crate log;
 extern crate tempfile;
 extern crate iron;
 extern crate staticfile;
+extern crate local_ipaddress;
 
 mod file;
 mod opts;
@@ -28,7 +29,14 @@ fn inner_main() -> std::io::Result<()> {
 
     stream.copy(dir.path())?;
 
-    Iron::new(Static::new(dir.path())).http("localhost:3000").unwrap_or_else(|e| {
+    let ip = local_ipaddress::get().unwrap_or_else(|| {
+        error!("Failed to get the ip address.");
+        std::process::exit(1);
+    });
+
+    println!("http://{}:{}/{}", ip, opts.port, stream.name());
+
+    Iron::new(Static::new(dir.path())).http((ip, opts.port)).unwrap_or_else(|e| {
         error!("Failed to build server: {}", e);
         std::process::exit(1);
     });

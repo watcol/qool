@@ -31,7 +31,7 @@ impl fmt::Display for Stream {
 }
 
 impl Stream {
-    fn name(&self) -> String {
+    pub fn name(&self) -> String {
         match self {
             Self::File(path) => path.clone(),
             Self::Stdin => "file".to_string(),

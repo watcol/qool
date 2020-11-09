@@ -5,7 +5,9 @@ selog::opts! {
     #[derive(Clone, Debug, PartialEq, Eq)]
     pub struct Opts {
         #[clap(about = "The input file.")]
-        pub input: Option<String>
+        pub input: Option<String>,
+        #[clap(short, long, about = "The server port.", default_value = "3000")]
+        pub port: u16
     }
 }
 

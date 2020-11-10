@@ -1,12 +1,12 @@
-use std::path::Path;
 use std::fmt;
-use std::io;
 use std::fs;
+use std::io;
+use std::path::Path;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Stream {
     File(String),
-    Stdin
+    Stdin,
 }
 
 impl Default for Stream {
@@ -33,7 +33,12 @@ impl fmt::Display for Stream {
 impl Stream {
     pub fn name(&self) -> String {
         match self {
-            Self::File(path) => path.clone(),
+            Self::File(path) => Path::new(&path)
+                .file_name()
+                .map(|i| i.to_str())
+                .flatten()
+                .unwrap_or("file")
+                .to_string(),
             Self::Stdin => "file".to_string(),
         }
     }
@@ -43,7 +48,9 @@ impl Stream {
         let path2 = dir.as_ref().join(self.name());
 
         match self {
-            Self::File(path) => {fs::copy(path, path2)?;},
+            Self::File(path) => {
+                fs::copy(path, path2)?;
+            }
             Self::Stdin => {
                 let mut file = fs::File::create(path2)?;
                 io::copy(&mut io::stdin(), &mut file)?;

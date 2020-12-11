@@ -2,7 +2,7 @@
 name = "qool"
 version = "0.0.1"
 description = "A command line tool to generate QR code."
-authors = ["watcol <kantaa058@gmail.com>"]
+authors = ["Potf <potfman@gmail.com>"]
 repository = "https://github.com/watcol/qool"
 keywords = ["qr", "qrcode"]
 categories = ["encoding", "command-line-utilities"]

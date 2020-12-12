@@ -18,4 +18,4 @@ $ cargo install --branch=main --git https://github.com/watcol/qool
 ## License
 Qool is licensed under the MIT license.
 
-See [LICENSE](https://github.com/p0tf/qool/blob/main/LICENSE) for more details.
+See [LICENSE](https://github.com/potfman/qool/blob/main/LICENSE) for more details.

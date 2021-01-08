@@ -35,12 +35,15 @@ fn inner_main() -> std::io::Result<()> {
         std::process::exit(1);
     });
 
-    qr2term::print_qr(format!("http://{}:{}/{}", ip, opts.port, stream.name())).unwrap_or_else(
+    let url = format!("http://{}:{}/{}", ip, opts.port, stream.name());
+
+    qr2term::print_qr(url.clone()).unwrap_or_else(
         |e| {
             error!("Failed to print QR code: {}", e);
             std::process::exit(1);
         },
     );
+    println!("{}", url);
 
     Iron::new(Static::new(dir.path()))
         .http((ip, opts.port))

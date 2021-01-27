@@ -17,3 +17,5 @@ include = [
 ]
 
 [dependencies]
+log = "0.4"
+fmtlog = "0.1"

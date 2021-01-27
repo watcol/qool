@@ -19,3 +19,5 @@ include = [
 [dependencies]
 log = "0.4"
 fmtlog = "0.1"
+
+tempfile = "3.2"

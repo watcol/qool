@@ -1,8 +1,10 @@
 #[macro_use]
 extern crate log;
 extern crate fmtlog;
+extern crate tempfile;
 
-use std::io::{stdin, Read, Result as IORes};
+use std::io::{stdin, Read, Write, Result as IORes};
+use std::fs::File;
 
 fn main() -> IORes<()> {
     //fmtlog::default()
@@ -11,11 +13,17 @@ fn main() -> IORes<()> {
         .unwrap();
 
     // Read from stdin.
-    let mut buf = String::new();
-    stdin().read_to_string(&mut buf)?;
+    let mut buf = Vec::new();
+    stdin().read_to_end(&mut buf)?;
+    debug!("buffer: {}", String::from_utf8_lossy(&buf));
 
-    // DEBUG
-    debug!("buffer:\n{}", buf);
+    // Write to temporary file.
+    let dir = tempfile::tempdir()?;
+    let path = dir.path().join("stdin");
+    let mut file = File::create(&path)?;
+    debug!("tempfile: {:?}", path.to_str());
+
+    file.write_all(&buf)?;
 
     Ok(())
 }

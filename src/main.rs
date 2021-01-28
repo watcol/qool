@@ -10,8 +10,8 @@ use std::io::{stdin, Read, Write, Result as IORes};
 use std::fs::File;
 
 fn init() {
-    //fmtlog::default()
-    fmtlog::new(fmtlog::Config::new().level(log::LevelFilter::Trace))  // DEBUG
+    //fmtlog::new(fmtlog::Config::new().level(log::LevelFilter::Trace))  // Debug
+    fmtlog::default()
         .set()
         .unwrap();
 }

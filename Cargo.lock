@@ -87,6 +87,7 @@ dependencies = [
 [[package]]
 name = "fmtlog"
 version = "0.1.2"
+source = "git+https://github.com/watcol/fmtlog?branch=main#8d0b13d54226914c74f81cacf4fa80358ddc1bff"
 dependencies = [
  "chrono",
  "colored",

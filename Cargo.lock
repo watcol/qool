@@ -86,8 +86,9 @@ dependencies = [
 
 [[package]]
 name = "fmtlog"
-version = "0.1.2"
-source = "git+https://github.com/watcol/fmtlog?branch=main#55cbb049f9ade2cd13edfcfaabf61d920906be56"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1c1cf2ad66aa2b643fb429ec72dd5237682da752e45a443f3d4e33d12faf4018"
 dependencies = [
  "chrono",
  "colored",

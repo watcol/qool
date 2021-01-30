@@ -24,14 +24,20 @@ fn read_buf() -> IORes<Vec<u8>> {
     Ok(buf)
 }
 
-fn create_dir<'a>() -> IORes<tempfile::TempDir> {
-    let buf = read_buf()?;
-    let dir = tempfile::tempdir()?;
-    let path = dir.path().join("stdin");
+fn add_file<T: AsRef<[u8]>>(dir: &std::path::Path, name: &str, buf: T) -> IORes<()> {
+    let path = dir.join(name);
     let mut file = File::create(&path)?;
-    file.write_all(&buf)?;
+    file.write_all(buf.as_ref())?;
+    Ok(())
+}
 
-    debug!("tempfile: {:?}", path.to_str());
+fn create_dir<'a>() -> IORes<tempfile::TempDir> {
+    let dir = tempfile::tempdir()?;
+    let path = dir.path();
+    add_file(path, "stdin", read_buf()?)?;
+    add_file(path, "favicon.ico", include_bytes!("../assets/favicon.ico"))?;
+
+    debug!("tempdir: {:?}", path.to_str());
 
     Ok(dir)
 }

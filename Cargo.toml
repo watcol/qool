@@ -18,7 +18,7 @@ include = [
 
 [dependencies]
 log = "0.4"
-fmtlog = { git = "https://github.com/watcol/fmtlog", branch = "main" }
+fmtlog = "0.1"
 tempfile = "3.2"
 iron = "0.6"
 staticfile = "0.5"

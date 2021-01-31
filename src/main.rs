@@ -34,8 +34,11 @@ fn add_file<T: AsRef<[u8]>>(dir: &std::path::Path, name: &str, buf: T) -> IORes<
 fn create_dir<'a>() -> IORes<tempfile::TempDir> {
     let dir = tempfile::tempdir()?;
     let path = dir.path();
-    add_file(path, "stdin", read_buf()?)?;
+    let name = "stdin";
+    add_file(path, name, read_buf()?)?;
     add_file(path, "favicon.ico", include_bytes!("../assets/favicon.ico"))?;
+    add_file(path, "style.css", include_str!("../assets/style.css"))?;
+    add_file(path, "index.html", include_str!("../assets/index.html").replace("{name}", name))?;
 
     debug!("tempdir: {:?}", path.to_str());
 
@@ -60,7 +63,7 @@ fn get_port() -> u16 {
 }
 
 fn print_url(ip: String, port: u16) {
-    let url = format!("http://{}:{}/{}", ip.clone(), port, "stdin");
+    let url = format!("http://{}:{}", ip.clone(), port);
     println!("{}", url);
 }
 

@@ -1,0 +1,65 @@
+@media (min-width:0px) {
+  html { font-size: 100%; }
+  table { width: 100% }
+}
+
+@media (min-width:480px) {
+  html { font-size: 80%; }
+  table { width: 80% }
+}
+
+@media (min-width:960px) {
+  html { font-size: 60%; }
+  table { width: 60% }
+}
+
+html {
+  font-family: sans-serif;
+}
+
+h1 {
+  color: black;
+  margin-top: 0px;
+  margin-bottom: 20px;
+  font-size: 4rem;
+  text-align: center;
+}
+
+table {
+  background-color: lightgrey;
+  border-collapse: collapse;
+  padding: 5px;
+  margin: 0px auto;
+}
+
+table tr:nth-child(odd){
+  background-color: #eeeeee;
+}
+
+span {
+  font-size: 1rem;
+  float: left;
+  margin: 5px;
+  padding: 5px;
+}
+
+button {
+  background-color: #00a0e5;
+  font-size: 1rem;
+  color: white;
+  float: right;
+  width: 6rem;
+  border-style: none;
+  border-radius: 5px;
+  box-shadow: 2px 2px 2px dimgrey;
+  padding: 5px;
+  margin: 5px;
+}
+
+button:hover {
+  background-color: #32c1ff;
+}
+
+button:active {
+  background-color: #7fd8ff;
+}

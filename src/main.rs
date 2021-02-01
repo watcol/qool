@@ -37,6 +37,7 @@ fn create_dir<'a>() -> IORes<tempfile::TempDir> {
     let name = "stdin";
     add_file(path, name, read_buf()?)?;
     add_file(path, "favicon.ico", include_bytes!("../assets/favicon.ico"))?;
+    add_file(path, "logo.svg", include_str!("../assets/logo.svg"))?;
     add_file(path, "style.css", include_str!("../assets/style.css"))?;
     add_file(path, "index.html", include_str!("../assets/index.html").replace("{name}", name))?;
 

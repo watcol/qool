@@ -17,12 +17,17 @@ html {
   font-family: sans-serif;
 }
 
-h1 {
+p {
   color: black;
   margin-top: 0px;
   margin-bottom: 20px;
   font-size: 4rem;
   text-align: center;
+}
+
+img {
+  width: 20rem;
+  height: 20rem;
 }
 
 table {

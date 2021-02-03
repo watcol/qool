@@ -1,4 +1,4 @@
-<div align="center"><img src="https://raw.githubusercontent.com/watcol/qool/main/assets/logo.svg"></div>
+<div align="center"><img src="https://raw.githubusercontent.com/watcol/qool/main/assets/logo_white.svg"></div>
 
 # Qool!!
 Share your data via QR Code!

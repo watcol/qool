@@ -1,6 +1,6 @@
+<img align="center" src="https://raw.githubusercontent.com/watcol/qool/main/assets/logo.svg" alt ="Qool!!">
 
-<div align="center"><img src="https://raw.githubusercontent.com/watcol/qool/main/assets/logo.svg" alt ="Qool!!"></div>
-
+# Qool!!
 Share your data via QR Code!
 
 ## Usage

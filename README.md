@@ -26,6 +26,9 @@ and read the qrcode by your phone, you can download the file!
 > - you should use this application in your house.
 
 ## License
-Qool is licensed under the MIT license.
+Qool is licensed under the following license:
 
-See [LICENSE](https://github.com/watcol/qool/blob/main/LICENSE) for more details.
+- The assets (in `assets/`) is licensed under the Creative Commons Attribution 4.0 International
+  License. See [LICENSE-CCBY4.0](https://github.com/watcol/qool/blob/main/LICENSE-CCBY4.0).
+- The others are licensed under the MIT license.
+  See [LICENSE-MIT](https://github.com/watcol/qool/blob/main/LICENSE-MIT).

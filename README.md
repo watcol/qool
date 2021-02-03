@@ -19,11 +19,11 @@ and read the qrcode by your phone, you can download the file!
 
 > **IMPORTANT**
 >
-> The file will be accessable from whole machines in your local network,
-> so:
+> While the shared files will be accessible from whole machines in your local network,
+> you should pay attention to these:
 >
-> - you should **NEVER** send your secret file.
-> - you should use this application in your house.
+> - Don't share any files in the public space. 
+> - Don't share your secret data.
 
 ## License
 Qool is licensed under the following license:

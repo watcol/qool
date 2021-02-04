@@ -1,19 +1,18 @@
 #[macro_use]
 extern crate log;
 extern crate fmtlog;
-extern crate tempfile;
 extern crate iron;
-extern crate staticfile;
 extern crate local_ipaddress;
+extern crate qr2term;
+extern crate staticfile;
+extern crate tempfile;
 
-use std::io::{stdin, Read, Write, Result as IORes};
 use std::fs::File;
+use std::io::{stdin, Read, Result as IORes, Write};
 
 fn init() {
     //fmtlog::new(fmtlog::Config::new().level(log::LevelFilter::Trace))  // Debug
-    fmtlog::default()
-        .set()
-        .unwrap();
+    fmtlog::default().set().unwrap();
 }
 
 fn read_buf() -> IORes<Vec<u8>> {
@@ -39,7 +38,11 @@ fn create_dir<'a>() -> IORes<tempfile::TempDir> {
     add_file(path, "favicon.ico", include_bytes!("../assets/favicon.ico"))?;
     add_file(path, "logo.svg", include_str!("../assets/logo.svg"))?;
     add_file(path, "style.css", include_str!("../assets/style.css"))?;
-    add_file(path, "index.html", include_str!("../assets/index.html").replace("{name}", name))?;
+    add_file(
+        path,
+        "index.html",
+        include_str!("../assets/index.html").replace("{name}", name),
+    )?;
 
     debug!("tempdir: {:?}", path.to_str());
 
@@ -65,6 +68,10 @@ fn get_port() -> u16 {
 
 fn print_url(ip: String, port: u16) {
     let url = format!("http://{}:{}", ip.clone(), port);
+    qr2term::print_qr(url.clone()).unwrap_or_else(|e| {
+        error!("Failed to print QR Code: {}", e);
+        std::process::exit(1);
+    });
     println!("{}", url);
 }
 

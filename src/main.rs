@@ -59,15 +59,21 @@ fn get_ip() -> String {
     ip
 }
 
-fn get_port() -> u16 {
+fn get_port(ip: &str) -> u16 {
     let port = 3000;
+
+    std::net::TcpListener::bind((ip, port)).unwrap_or_else(|e| {
+        error!("Port \"3000\" is unavailable: {}", e);
+        std::process::exit(1);
+    });
+
     debug!("Port: {}", port);
 
     port
 }
 
-fn print_url(ip: String, port: u16) {
-    let url = format!("http://{}:{}", ip.clone(), port);
+fn print_url(ip: &str, port: u16) {
+    let url = format!("http://{}:{}", ip, port);
     qr2term::print_qr(url.clone()).unwrap_or_else(|e| {
         error!("Failed to print QR Code: {}", e);
         std::process::exit(1);
@@ -75,7 +81,7 @@ fn print_url(ip: String, port: u16) {
     println!("{}", url);
 }
 
-fn build_server(ip: String, port: u16, dir: &std::path::Path) {
+fn build_server(ip: &str, port: u16, dir: &std::path::Path) {
     iron::Iron::new(staticfile::Static::new(dir))
         .http((ip, port))
         .unwrap_or_else(|e| {
@@ -89,10 +95,10 @@ fn inner_main() -> IORes<()> {
 
     let dir = create_dir()?;
     let ip = get_ip();
-    let port = get_port();
+    let port = get_port(&ip);
 
-    print_url(ip.clone(), port);
-    build_server(ip, port, dir.path());
+    print_url(&ip, port);
+    build_server(&ip, port, dir.path());
 
     Ok(())
 }

@@ -2,7 +2,6 @@
 extern crate log;
 extern crate fmtlog;
 extern crate iron;
-extern crate local_ipaddress;
 extern crate qr2term;
 extern crate staticfile;
 extern crate tempfile;
@@ -49,31 +48,14 @@ fn create_dir<'a>() -> IORes<tempfile::TempDir> {
     Ok(dir)
 }
 
-fn get_ip() -> String {
-    let ip = local_ipaddress::get().unwrap_or_else(|| {
-        error!("Failed to get the ip address.");
-        std::process::exit(1);
-    });
-    debug!("IP Addr: {}", ip);
-
-    ip
+fn get_addr() -> IORes<std::net::SocketAddr> {
+    let socket = std::net::UdpSocket::bind("0.0.0.0:3000")?;
+    socket.connect("8.8.8.8:80")?;
+    socket.local_addr()
 }
 
-fn get_port(ip: &str) -> u16 {
-    let port = 3000;
-
-    std::net::TcpListener::bind((ip, port)).unwrap_or_else(|e| {
-        error!("Port \"3000\" is unavailable: {}", e);
-        std::process::exit(1);
-    });
-
-    debug!("Port: {}", port);
-
-    port
-}
-
-fn print_url(ip: &str, port: u16) {
-    let url = format!("http://{}:{}", ip, port);
+fn print_url(addr: std::net::SocketAddr) {
+    let url = format!("http://{}", addr);
     qr2term::print_qr(url.clone()).unwrap_or_else(|e| {
         error!("Failed to print QR Code: {}", e);
         std::process::exit(1);
@@ -81,9 +63,9 @@ fn print_url(ip: &str, port: u16) {
     println!("{}", url);
 }
 
-fn build_server(ip: &str, port: u16, dir: &std::path::Path) {
+fn build_server(addr: std::net::SocketAddr, dir: &std::path::Path) {
     iron::Iron::new(staticfile::Static::new(dir))
-        .http((ip, port))
+        .http(addr)
         .unwrap_or_else(|e| {
             error!("Failed to build server: {}", e);
             std::process::exit(1);
@@ -94,11 +76,10 @@ fn inner_main() -> IORes<()> {
     init();
 
     let dir = create_dir()?;
-    let ip = get_ip();
-    let port = get_port(&ip);
+    let addr = get_addr()?;
 
-    print_url(&ip, port);
-    build_server(&ip, port, dir.path());
+    print_url(addr);
+    build_server(addr, dir.path());
 
     Ok(())
 }

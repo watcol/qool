@@ -17,10 +17,9 @@ include = [
 ]
 
 [dependencies]
-log = "0.4"
 fmtlog = "0.1"
-tempfile = "3.2"
 iron = "0.6"
-staticfile = "0.5"
-local_ipaddress = "0.1"
+log = "0.4"
 qr2term = "0.2"
+staticfile = "0.5"
+tempfile = "3.2"

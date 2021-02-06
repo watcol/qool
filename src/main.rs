@@ -1,13 +1,15 @@
 #[macro_use]
 extern crate log;
 extern crate fmtlog;
-extern crate iron;
 extern crate qr2term;
-extern crate staticfile;
 extern crate tempfile;
+
+mod server;
 
 use std::fs::File;
 use std::io::{stdin, Read, Result as IORes, Write};
+
+use server::Server;
 
 fn init() {
     //fmtlog::new(fmtlog::Config::new().level(log::LevelFilter::Trace))  // Debug
@@ -48,38 +50,26 @@ fn create_dir<'a>() -> IORes<tempfile::TempDir> {
     Ok(dir)
 }
 
-fn get_addr() -> IORes<std::net::SocketAddr> {
-    let socket = std::net::UdpSocket::bind("0.0.0.0:3000")?;
-    socket.connect("8.8.8.8:80")?;
-    socket.local_addr()
-}
-
-fn print_url(addr: std::net::SocketAddr) {
-    let url = format!("http://{}", addr);
-    qr2term::print_qr(url.clone()).unwrap_or_else(|e| {
+fn print_url(url: String) {
+    qr2term::print_qr(&url).unwrap_or_else(|e| {
         error!("Failed to print QR Code: {}", e);
         std::process::exit(1);
     });
-    println!("{}", url);
-}
 
-fn build_server(addr: std::net::SocketAddr, dir: &std::path::Path) {
-    iron::Iron::new(staticfile::Static::new(dir))
-        .http(addr)
-        .unwrap_or_else(|e| {
-            error!("Failed to build server: {}", e);
-            std::process::exit(1);
-        });
+    println!("{}", url);
 }
 
 fn inner_main() -> IORes<()> {
     init();
 
     let dir = create_dir()?;
-    let addr = get_addr()?;
 
-    print_url(addr);
-    build_server(addr, dir.path());
+    let server = Server::new(dir.path())?;
+    print_url(server.url());
+    server.start().unwrap_or_else(|e| {
+        error!("Failed to build server: {}", e);
+        std::process::exit(1);
+    });
 
     Ok(())
 }

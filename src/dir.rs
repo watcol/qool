@@ -1,7 +1,7 @@
 extern crate tempfile;
 
 use crate::IORes;
-use std::fs::File;
+use std::fs::{copy as fscopy, File};
 use std::io::{copy as iocopy, stdin};
 use std::path::{Path, PathBuf};
 use tempfile::TempDir;
@@ -22,8 +22,18 @@ impl Directory {
 
     pub fn add_stdin<T: Into<String>>(&mut self, name: T) -> IORes<&mut Self> {
         let path = self.add_name(name);
-        debug!("path: {:?}", path);
         iocopy(&mut stdin(), &mut File::create(path)?)?;
+        Ok(self)
+    }
+
+    pub fn add_file<T: Into<String>>(&mut self, path: T) -> IORes<&mut Self> {
+        let src = path.into();
+        let name = Path::new(&src).file_name().unwrap_or_else(|| {
+            error!("Can't transfer a directory.");
+            std::process::exit(1);
+        }).to_string_lossy();
+        let dst = self.add_name(name);
+        fscopy(src, dst)?;
         Ok(self)
     }
 

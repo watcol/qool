@@ -25,20 +25,27 @@ struct Opts {
     verbose: bool,
     #[structopt(help = "Debug log", short, long)]
     debug: bool,
+    #[structopt(help = "Change the log destination", short, long)]
+    log: Option<std::path::PathBuf>,
     #[structopt(help = "A port to serve files", short, long, default_value = "3000")]
     port: u16,
+    #[structopt(help = "The files to transfer")]
+    input: Vec<String>,
 }
 
 impl Opts {
     fn init_log(&self) -> QResult<()> {
         use fmtlog::Config;
 
-        fmtlog::new(
-            Config::new()
-                .format(self.log_format())
-                .level(self.log_level()),
-        )
-        .set()?;
+        let mut conf = Config::new()
+            .level(self.log_level())
+            .format(self.log_format());
+
+        if let Some(ref path) = self.log {
+            conf = conf.output(path);
+        }
+
+        fmtlog::new(conf).set()?;
         Ok(())
     }
 
@@ -84,9 +91,13 @@ fn inner_main() -> QResult<()> {
     opts.init_log()?;
 
     let mut dir = Directory::new()?;
-    let path = dir.add_stdin("stdin")?.path()?;
+    if opts.input.len() == 0 {
+        dir.add_stdin("stdin")?;
+    } else {
+        opts.input.iter().fold(Ok(&mut dir), |dir, s| dir?.add_file(s))?;
+    }
 
-    let server = Server::new(path, opts.port)?;
+    let server = Server::new(dir.path()?, opts.port)?;
     print_url(server.url())?;
     server.start()?;
 

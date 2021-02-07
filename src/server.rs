@@ -1,17 +1,17 @@
 extern crate iron;
 extern crate staticfile;
 
-use crate::IORes;
+use crate::QResult;
 use std::net::{SocketAddr, UdpSocket};
 use std::path::PathBuf;
 
-use iron::{error::HttpResult, Iron};
+use iron::Iron;
 use staticfile::Static;
 
-fn local_addr() -> IORes<std::net::SocketAddr> {
+fn local_addr() -> QResult<std::net::SocketAddr> {
     let socket = UdpSocket::bind("0.0.0.0:3000")?;
     socket.connect("8.8.8.8:80")?;
-    socket.local_addr()
+    Ok(socket.local_addr()?)
 }
 
 pub struct Server {
@@ -20,7 +20,7 @@ pub struct Server {
 }
 
 impl Server {
-    pub fn new<T: Into<PathBuf>>(path: T) -> IORes<Self> {
+    pub fn new<T: Into<PathBuf>>(path: T) -> QResult<Self> {
         Ok(Self {
             addr: local_addr()?,
             dir: path.into(),
@@ -31,7 +31,7 @@ impl Server {
         format!("http://{}", self.addr)
     }
 
-    pub fn start(&self) -> HttpResult<()> {
+    pub fn start(&self) -> QResult<()> {
         Iron::new(Static::new(&self.dir)).http(self.addr)?;
         Ok(())
     }

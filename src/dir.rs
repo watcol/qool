@@ -1,6 +1,6 @@
 extern crate tempfile;
 
-use crate::IORes;
+use crate::QResult;
 use std::fs::{copy as fscopy, File};
 use std::io::{copy as iocopy, stdin};
 use std::path::{Path, PathBuf};
@@ -13,31 +13,34 @@ pub struct Directory {
 }
 
 impl Directory {
-    pub fn new() -> IORes<Self> {
+    pub fn new() -> QResult<Self> {
         Ok(Self {
             dir: tempfile::tempdir()?,
             items: Vec::new(),
         })
     }
 
-    pub fn add_stdin<T: Into<String>>(&mut self, name: T) -> IORes<&mut Self> {
+    pub fn add_stdin<T: Into<String>>(&mut self, name: T) -> QResult<&mut Self> {
         let path = self.add_name(name);
         iocopy(&mut stdin(), &mut File::create(path)?)?;
         Ok(self)
     }
 
-    pub fn add_file<T: Into<String>>(&mut self, path: T) -> IORes<&mut Self> {
+    pub fn add_file<T: Into<String>>(&mut self, path: T) -> QResult<&mut Self> {
         let src = path.into();
-        let name = Path::new(&src).file_name().unwrap_or_else(|| {
-            error!("Can't transfer a directory.");
-            std::process::exit(1);
-        }).to_string_lossy();
+        let name = match Path::new(&src).file_name() {
+            Some(s) => s.to_string_lossy(),
+            None => return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "Can't upload a directory.",
+            ).into()),
+        };
         let dst = self.add_name(name);
         fscopy(src, dst)?;
         Ok(self)
     }
 
-    pub fn path(&self) -> IORes<&Path> {
+    pub fn path(&self) -> QResult<&Path> {
         self.add_buf("favicon.ico", include_bytes!("../assets/favicon.ico"))?
             .add_buf("logo.svg", include_str!("../assets/logo.svg"))?
             .add_buf("style.css", include_str!("../assets/style.css"))?
@@ -74,7 +77,7 @@ impl Directory {
         )
     }
 
-    fn add_buf<T: Into<String>, U: AsRef<[u8]>>(&self, name: T, buf: U) -> IORes<&Self> {
+    fn add_buf<T: Into<String>, U: AsRef<[u8]>>(&self, name: T, buf: U) -> QResult<&Self> {
         let name = name.into();
         let mut buf = buf.as_ref();
         let path = self.dir.path().join(&name);

@@ -4,39 +4,34 @@ extern crate fmtlog;
 extern crate qr2term;
 
 mod dir;
+mod error;
 mod server;
 
-use std::io::Result as IORes;
-
+use error::QResult;
 use dir::Directory;
 use server::Server;
 
-fn init() {
-    // fmtlog::new(fmtlog::Config::new().level(fmtlog::LevelFilter::Trace)).set().unwrap();
-    fmtlog::default().set().unwrap();
+fn init() -> QResult<()> {
+    // fmtlog::new(fmtlog::Config::new().level(fmtlog::LevelFilter::Trace)).set()?;
+    fmtlog::default().set()?;
+    Ok(())
 }
 
-fn print_url(url: String) {
-    qr2term::print_qr(&url).unwrap_or_else(|e| {
-        error!("Failed to print QR Code: {}", e);
-        std::process::exit(1);
-    });
-
+fn print_url(url: String) -> QResult<()> {
+    qr2term::print_qr(&url)?;
     println!("{}", url);
+    Ok(())
 }
 
-fn inner_main() -> IORes<()> {
-    init();
+fn inner_main() -> QResult<()> {
+    init()?;
 
     let mut dir = Directory::new()?;
     let path = dir.add_stdin("stdin")?.path()?;
 
     let server = Server::new(path)?;
-    print_url(server.url());
-    server.start().unwrap_or_else(|e| {
-        error!("Failed to build server: {}", e);
-        std::process::exit(1);
-    });
+    print_url(server.url())?;
+    server.start()?;
 
     Ok(())
 }
@@ -44,6 +39,6 @@ fn inner_main() -> IORes<()> {
 fn main() {
     inner_main().unwrap_or_else(|e| {
         error!("{}", e);
-        std::process::exit(e.raw_os_error().unwrap_or(1));
+        std::process::exit(e.exit_code());
     });
 }

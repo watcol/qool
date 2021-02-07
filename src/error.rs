@@ -15,14 +15,14 @@ pub enum QoolError {
     #[error("QR Code Writing Error: {0}")]
     QR(#[from] qr2term::QrError),
     #[error("Clipboard Reading Error: {0}")]
-    Clipboard(#[from] Box<dyn std::error::Error>)
+    Clipboard(#[from] Box<dyn std::error::Error>),
 }
 
 impl QoolError {
     pub fn exit_code(&self) -> i32 {
         match self {
             Self::IO(e) => e.raw_os_error().unwrap_or(1),
-            _ => 1
+            _ => 1,
         }
     }
 }

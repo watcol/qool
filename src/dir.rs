@@ -2,10 +2,10 @@ extern crate clipboard;
 extern crate tempfile;
 
 use crate::QResult;
+use clipboard::{ClipboardContext, ClipboardProvider};
 use std::fs::{copy as fscopy, File};
 use std::io::{copy as iocopy, stdin};
 use std::path::{Path, PathBuf};
-use clipboard::{ClipboardContext, ClipboardProvider};
 use tempfile::TempDir;
 
 #[derive(Debug)]
@@ -32,10 +32,13 @@ impl Directory {
         let src = path.into();
         let name = match Path::new(&src).file_name() {
             Some(s) => s.to_string_lossy(),
-            None => return Err(std::io::Error::new(
-                std::io::ErrorKind::InvalidInput,
-                "Can't upload a directory.",
-            ).into()),
+            None => {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidInput,
+                    "Can't upload a directory.",
+                )
+                .into())
+            }
         };
         let dst = self.add_name(name);
         fscopy(src, dst)?;

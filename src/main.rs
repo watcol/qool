@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate log;
+extern crate atty;
 extern crate fmtlog;
 extern crate qr2term;
 extern crate structopt;
@@ -84,7 +85,7 @@ impl Opts {
     fn create_dir(&self) -> QResult<Directory> {
         let mut dir = Directory::new()?;
 
-        if self.input.len() == 0 && !self.clipboard {
+        if (self.input.len() == 0 && !self.clipboard) || atty::isnt(atty::Stream::Stdin) {
             dir.add_stdin("stdin")?;
         } else {
             self.input.iter().fold(Ok(&mut dir), |dir, s| dir?.add_file(s))?;

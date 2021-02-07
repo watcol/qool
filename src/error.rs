@@ -6,13 +6,13 @@ pub type QResult<T> = Result<T, QoolError>;
 
 #[derive(Error, Debug)]
 pub enum QoolError {
-    #[error("File IO Error")]
+    #[error("File IO Error: {0}")]
     IO(#[from] std::io::Error),
-    #[error("Log Initializing Error")]
+    #[error("Log Initializing Error: {0}")]
     Log(#[from] log::SetLoggerError),
-    #[error("Server Build Error")]
+    #[error("Server Build Error: {0}")]
     Server(#[from] iron::error::HttpError),
-    #[error("QR Code Writing Error")]
+    #[error("QR Code Writing Error: {0}")]
     QR(#[from] qr2term::QrError)
 }
 

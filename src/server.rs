@@ -8,8 +8,8 @@ use std::path::PathBuf;
 use iron::Iron;
 use staticfile::Static;
 
-fn local_addr() -> QResult<std::net::SocketAddr> {
-    let socket = UdpSocket::bind("0.0.0.0:3000")?;
+fn local_addr(port: u16) -> QResult<std::net::SocketAddr> {
+    let socket = UdpSocket::bind(("0.0.0.0", port))?;
     socket.connect("8.8.8.8:80")?;
     Ok(socket.local_addr()?)
 }
@@ -20,9 +20,9 @@ pub struct Server {
 }
 
 impl Server {
-    pub fn new<T: Into<PathBuf>>(path: T) -> QResult<Self> {
+    pub fn new<T: Into<PathBuf>>(path: T, port: u16) -> QResult<Self> {
         Ok(Self {
-            addr: local_addr()?,
+            addr: local_addr(port)?,
             dir: path.into(),
         })
     }

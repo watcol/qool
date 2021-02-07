@@ -16,15 +16,18 @@ use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
 #[structopt(about = env!("CARGO_PKG_DESCRIPTION"), author = env!("CARGO_PKG_AUTHORS"))]
-struct Opts {}
+struct Opts {
+    #[structopt(help = "A port to serve files", short, long, default_value = "3000")]
+    port: u16,
+}
 
-fn init() -> QResult<()> {
-    let opt = Opts::from_args();
+fn init() -> QResult<Opts> {
+    let opts = Opts::from_args();
     // fmtlog::new(fmtlog::Config::new().level(fmtlog::LevelFilter::Trace)).set()?;
     fmtlog::default().set()?;
 
-    debug!("opts: {:?}", opt);
-    Ok(())
+    debug!("opts: {:?}", opts);
+    Ok(opts)
 }
 
 fn print_url(url: String) -> QResult<()> {
@@ -34,12 +37,12 @@ fn print_url(url: String) -> QResult<()> {
 }
 
 fn inner_main() -> QResult<()> {
-    init()?;
+    let opts = init()?;
 
     let mut dir = Directory::new()?;
     let path = dir.add_stdin("stdin")?.path()?;
 
-    let server = Server::new(path)?;
+    let server = Server::new(path, opts.port)?;
     print_url(server.url())?;
     server.start()?;
 

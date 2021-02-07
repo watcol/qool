@@ -9,7 +9,7 @@
 }
 
 @media (min-width:960px) {
-  html { font-size: 60%; }
+  html { font-size: 80%; }
   table { width: 60% }
 }
 
@@ -42,7 +42,7 @@ table tr:nth-child(odd){
 }
 
 span {
-  font-size: 1rem;
+  font-size: 1.2rem;
   float: left;
   margin: 5px;
   padding: 5px;

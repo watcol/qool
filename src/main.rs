@@ -1,7 +1,5 @@
 #[macro_use]
 extern crate log;
-extern crate atty;
-extern crate fmtlog;
 extern crate qr2term;
 extern crate structopt;
 

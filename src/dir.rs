@@ -81,7 +81,6 @@ impl Directory {
         let name = name.into();
         let mut buf = buf.as_ref();
         let path = self.dir.path().join(&name);
-        debug!("path: {:?}", path);
         iocopy(&mut buf, &mut File::create(path)?)?;
         Ok(self)
     }

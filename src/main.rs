@@ -17,17 +17,60 @@ use structopt::StructOpt;
 #[derive(StructOpt, Debug)]
 #[structopt(about = env!("CARGO_PKG_DESCRIPTION"), author = env!("CARGO_PKG_AUTHORS"))]
 struct Opts {
+    #[structopt(help = "Silence all log", long)]
+    silent: bool,
+    #[structopt(help = "Quiet log", short, long)]
+    quiet: bool,
+    #[structopt(help = "Verbose log", short, long)]
+    verbose: bool,
+    #[structopt(help = "Debug log", short, long)]
+    debug: bool,
     #[structopt(help = "A port to serve files", short, long, default_value = "3000")]
     port: u16,
 }
 
-fn init() -> QResult<Opts> {
-    let opts = Opts::from_args();
-    // fmtlog::new(fmtlog::Config::new().level(fmtlog::LevelFilter::Trace)).set()?;
-    fmtlog::default().set()?;
+impl Opts {
+    fn init_log(&self) -> QResult<()> {
+        use fmtlog::Config;
 
-    debug!("opts: {:?}", opts);
-    Ok(opts)
+        fmtlog::new(
+            Config::new()
+                .format(self.log_format())
+                .level(self.log_level()),
+        )
+        .set()?;
+        Ok(())
+    }
+
+    fn log_format(&self) -> &'static str {
+        use fmtlog::formats::*;
+        use fmtlog::LevelFilter::*;
+
+        match self.log_level() {
+            Off => "",
+            Error | Warn => SIMPLE1,
+            Info => DETAIL1,
+            Debug | Trace => DEBUG1,
+        }
+    }
+
+    fn log_level(&self) -> fmtlog::LevelFilter {
+        use fmtlog::LevelFilter::*;
+
+        if self.silent {
+            Off
+        } else if self.quiet {
+            Error
+        } else if !self.verbose && !self.debug {
+            Warn
+        } else if self.verbose && !self.debug {
+            Info
+        } else if !self.verbose && self.debug {
+            Debug
+        } else {
+            Trace
+        }
+    }
 }
 
 fn print_url(url: String) -> QResult<()> {
@@ -37,7 +80,8 @@ fn print_url(url: String) -> QResult<()> {
 }
 
 fn inner_main() -> QResult<()> {
-    let opts = init()?;
+    let opts = Opts::from_args();
+    opts.init_log()?;
 
     let mut dir = Directory::new()?;
     let path = dir.add_stdin("stdin")?.path()?;

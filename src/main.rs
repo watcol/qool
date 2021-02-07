@@ -29,7 +29,7 @@ fn inner_main() -> IORes<()> {
     init();
 
     let mut dir = Directory::new()?;
-    let path = dir.add_stdin("stdin")?.path()?;
+    let path = dir.add_stdin("stdin")?.add_stdin("stdin")?.path()?;
 
     let server = Server::new(path)?;
     print_url(server.url());

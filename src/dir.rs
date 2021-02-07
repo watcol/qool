@@ -20,7 +20,7 @@ impl Directory {
         })
     }
 
-    pub fn add_stdin<T: Into<String>>(&mut self, name: T) -> IORes<&Self> {
+    pub fn add_stdin<T: Into<String>>(&mut self, name: T) -> IORes<&mut Self> {
         let path = self.add_name(name);
         debug!("path: {:?}", path);
         iocopy(&mut stdin(), &mut File::create(path)?)?;
@@ -31,10 +31,7 @@ impl Directory {
         self.add_buf("favicon.ico", include_bytes!("../assets/favicon.ico"))?
             .add_buf("logo.svg", include_str!("../assets/logo.svg"))?
             .add_buf("style.css", include_str!("../assets/style.css"))?
-            .add_buf(
-                "index.html",
-                include_str!("../assets/index.html").replace("{name}", &self.items[0]),
-            )?;
+            .add_buf("index.html", self.build_index())?;
 
         Ok(self.dir.path())
     }
@@ -53,6 +50,18 @@ impl Directory {
         let path = self.dir.path().join(&name);
         self.items.push(name.clone());
         path
+    }
+
+    fn build_index(&self) -> String {
+        include_str!("../assets/index.html").replace(
+            "{trs}",
+            &self
+                .items
+                .iter()
+                .map(|n| include_str!("../assets/_tr.html").replace("{name}", n))
+                .collect::<Vec<_>>()
+                .concat(),
+        )
     }
 
     fn add_buf<T: Into<String>, U: AsRef<[u8]>>(&self, name: T, buf: U) -> IORes<&Self> {

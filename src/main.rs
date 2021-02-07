@@ -27,9 +27,11 @@ struct Opts {
     debug: bool,
     #[structopt(help = "Change the log destination", short, long)]
     log: Option<std::path::PathBuf>,
+    #[structopt(help = "Upload the contents in clipboard", short, long)]
+    clipboard: bool,
     #[structopt(help = "A port to serve files", short, long, default_value = "3000")]
     port: u16,
-    #[structopt(help = "The files to transfer")]
+    #[structopt(help = "The files to upload")]
     input: Vec<String>,
 }
 
@@ -78,6 +80,22 @@ impl Opts {
             Trace
         }
     }
+
+    fn create_dir(&self) -> QResult<Directory> {
+        let mut dir = Directory::new()?;
+
+        if self.input.len() == 0 && !self.clipboard {
+            dir.add_stdin("stdin")?;
+        } else {
+            self.input.iter().fold(Ok(&mut dir), |dir, s| dir?.add_file(s))?;
+        }
+
+        if self.clipboard {
+            dir.add_clipboard("clipboard")?;
+        }
+
+        Ok(dir)
+    }
 }
 
 fn print_url(url: String) -> QResult<()> {
@@ -90,12 +108,7 @@ fn inner_main() -> QResult<()> {
     let opts = Opts::from_args();
     opts.init_log()?;
 
-    let mut dir = Directory::new()?;
-    if opts.input.len() == 0 {
-        dir.add_stdin("stdin")?;
-    } else {
-        opts.input.iter().fold(Ok(&mut dir), |dir, s| dir?.add_file(s))?;
-    }
+    let dir = opts.create_dir()?;
 
     let server = Server::new(dir.path()?, opts.port)?;
     print_url(server.url())?;

@@ -17,6 +17,8 @@ include = [
 ]
 
 [dependencies]
+atty = "0.2"
+clipboard = "0.5"
 fmtlog = "0.1"
 iron = "0.6"
 log = "0.4"

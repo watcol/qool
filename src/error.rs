@@ -13,7 +13,9 @@ pub enum QoolError {
     #[error("Server Build Error: {0}")]
     Server(#[from] iron::error::HttpError),
     #[error("QR Code Writing Error: {0}")]
-    QR(#[from] qr2term::QrError)
+    QR(#[from] qr2term::QrError),
+    #[error("Clipboard Reading Error: {0}")]
+    Clipboard(#[from] Box<dyn std::error::Error>)
 }
 
 impl QoolError {

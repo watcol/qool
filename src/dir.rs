@@ -1,9 +1,11 @@
+extern crate clipboard;
 extern crate tempfile;
 
 use crate::QResult;
 use std::fs::{copy as fscopy, File};
 use std::io::{copy as iocopy, stdin};
 use std::path::{Path, PathBuf};
+use clipboard::{ClipboardContext, ClipboardProvider};
 use tempfile::TempDir;
 
 #[derive(Debug)]
@@ -37,6 +39,14 @@ impl Directory {
         };
         let dst = self.add_name(name);
         fscopy(src, dst)?;
+        Ok(self)
+    }
+
+    pub fn add_clipboard<T: Into<String>>(&mut self, name: T) -> QResult<&mut Self> {
+        let path = self.add_name(name);
+        let buf = ClipboardContext::new()?.get_contents()?;
+        let mut buf = buf.as_bytes();
+        iocopy(&mut buf, &mut File::create(path)?)?;
         Ok(self)
     }
 

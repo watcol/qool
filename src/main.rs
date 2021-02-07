@@ -2,18 +2,28 @@
 extern crate log;
 extern crate fmtlog;
 extern crate qr2term;
+extern crate structopt;
 
 mod dir;
 mod error;
 mod server;
 
-use error::QResult;
 use dir::Directory;
+use error::QResult;
 use server::Server;
 
+use structopt::StructOpt;
+
+#[derive(StructOpt, Debug)]
+#[structopt(about = env!("CARGO_PKG_DESCRIPTION"), author = env!("CARGO_PKG_AUTHORS"))]
+struct Opts {}
+
 fn init() -> QResult<()> {
+    let opt = Opts::from_args();
     // fmtlog::new(fmtlog::Config::new().level(fmtlog::LevelFilter::Trace)).set()?;
     fmtlog::default().set()?;
+
+    debug!("opts: {:?}", opt);
     Ok(())
 }
 

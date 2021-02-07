@@ -12,7 +12,7 @@ use dir::Directory;
 use server::Server;
 
 fn init() {
-    //fmtlog::new(fmtlog::Config::new().level(log::LevelFilter::Trace))  // Debug
+    // fmtlog::new(fmtlog::Config::new().level(fmtlog::LevelFilter::Trace)).set().unwrap();
     fmtlog::default().set().unwrap();
 }
 
@@ -28,9 +28,10 @@ fn print_url(url: String) {
 fn inner_main() -> IORes<()> {
     init();
 
-    let dir = Directory::new()?.add_stdin("stdin")?.path()?;
+    let mut dir = Directory::new()?;
+    let path = dir.add_stdin("stdin")?.path()?;
 
-    let server = Server::new(dir)?;
+    let server = Server::new(path)?;
     print_url(server.url());
     server.start().unwrap_or_else(|e| {
         error!("Failed to build server: {}", e);

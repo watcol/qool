@@ -5,7 +5,7 @@ use crate::IORes;
 use std::net::{SocketAddr, UdpSocket};
 use std::path::PathBuf;
 
-use iron::{Iron, error::HttpResult};
+use iron::{error::HttpResult, Iron};
 use staticfile::Static;
 
 fn local_addr() -> IORes<std::net::SocketAddr> {

@@ -1,7 +1,10 @@
 <div align="center"><img src="https://raw.githubusercontent.com/watcol/qool/main/assets/logo_white.svg"></div>
 
 # [WIP] Qool!!
-Share your data via QR Code!
+Qool is a simple CLI file sharing tool between PC and phone via QR code.
+
+## Demo
+![Demo](https://raw.githubusercontent.com/watcol/qool/main/assets/demo.png)
 
 ## Installation
 ### Stable Version
@@ -18,9 +21,20 @@ $ cargo install --branch=main --git https://github.com/watcol/qool
 
 ## Usage
 ```shell
-$ qool [file]
+$ qool [file...]
 ```
-and read the qrcode by your phone, you can download the file!
+to share files, or
+```shell
+$ [any commands] | qool
+```
+to pipe commands and share the result.
+
+Then read the displayed QR code by your phone, the following page will appear.
+
+![WebSite](https://raw.githubusercontent.com/watcol/qool/main/assets/website.png)
+
+Touch "Open" to open the file in your browser (or download if the browser doesn't support the file format), and
+touch "Download" to download the content to your device.
 
 > **IMPORTANT**
 >

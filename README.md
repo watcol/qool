@@ -20,21 +20,27 @@ $ cargo install --branch=main --git https://github.com/watcol/qool
 ```
 
 ## Usage
+This application is easy to use that share files in only 3 steps.
+
+### 1. Open the terminal, and run it.
 ```shell
 $ qool [file...]
 ```
-to share files, or
-```shell
-$ [any commands] | qool
-```
-to pipe commands and share the result.
 
-Then read the displayed QR code by your phone, the following page will appear.
+
+### 2. Read the displayed QR code by your phone.
+the following page will appear.
 
 <div align="center"><img src="https://raw.githubusercontent.com/watcol/qool/main/assets/website.png" width="50%"></div>
 
+### 3. Download the file.
 Touch "Open" to open the file in your browser (or download if the browser doesn't support the file format), and
 touch "Download" to download the content to your device.
+
+For more helps, run it:
+```
+$ qool -h
+```
 
 > **IMPORTANT**
 >
@@ -66,6 +72,9 @@ or ask your system manager to open it.
 ### Other troubles
 For the other troubles, I'm afraid but please make an issue 
 [here](https://github.com/watcol/qool/issues/new).
+
+## Author
+- ![watcol](https://raw.githubusercontent.com/watcol/icons/main/32/normal.png) Watcol
 
 ## License
 Qool is licensed under the following license:

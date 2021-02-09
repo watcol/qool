@@ -1,5 +1,6 @@
 extern crate atty;
 extern crate fmtlog;
+extern crate structopt;
 
 use crate::QResult;
 use crate::dir::Directory;
@@ -27,6 +28,10 @@ pub struct Opts {
 }
 
 impl Opts {
+    pub fn new() -> Self {
+        Self::from_args()
+    }
+
     pub fn init_log(&self) -> QResult<()> {
         use fmtlog::Config;
 
@@ -81,11 +86,11 @@ impl Opts {
 
         if (self.input.len() == 0 && !self.clipboard) || atty::isnt(atty::Stream::Stdin) {
             dir.add_stdin("stdin")?;
-        } else {
-            self.input
-                .iter()
-                .fold(Ok(&mut dir), |dir, s| dir?.add_file(s))?;
         }
+
+        self.input
+            .iter()
+            .fold(Ok(&mut dir), |dir, s| dir?.add_file(s))?;
 
         if self.clipboard {
             dir.add_clipboard("clipboard")?;

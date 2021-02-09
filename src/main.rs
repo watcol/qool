@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate log;
 extern crate qr2term;
-extern crate structopt;
 
 mod dir;
 mod error;
@@ -19,8 +18,7 @@ fn print_url(url: String) -> QResult<()> {
 }
 
 fn inner_main() -> QResult<()> {
-    use structopt::StructOpt;
-    let opts = Opts::from_args();
+    let opts = Opts::new();
     opts.init_log()?;
 
     let dir = opts.create_dir()?;

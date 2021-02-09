@@ -5,10 +5,12 @@ extern crate qr2term;
 mod dir;
 mod error;
 mod opts;
+mod log_builder;
 mod server;
 
 use error::QResult;
 use opts::Opts;
+use log_builder::LogBuilder;
 use server::Server;
 
 fn print_url(url: String) -> QResult<()> {
@@ -19,7 +21,14 @@ fn print_url(url: String) -> QResult<()> {
 
 fn inner_main() -> QResult<()> {
     let opts = Opts::new();
-    opts.init_log()?;
+
+    LogBuilder::new()
+        .silent(opts.silent())
+        .quiet(opts.quiet())
+        .verbose(opts.verbose())
+        .debug(opts.debug())
+        .log(opts.log())
+        .init()?;
 
     let dir = opts.create_dir()?;
     let server = Server::new(dir.path()?, opts.port())?;

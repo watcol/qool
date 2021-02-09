@@ -32,53 +32,36 @@ impl Opts {
         Self::from_args()
     }
 
-    pub fn init_log(&self) -> QResult<()> {
-        use fmtlog::Config;
-
-        let mut conf = Config::new()
-            .level(self.log_level())
-            .format(self.log_format());
-
-        if let Some(ref path) = self.log {
-            conf = conf.output(path);
-        }
-
-        fmtlog::new(conf).set()?;
-        Ok(())
+    pub fn silent(&self) -> bool {
+        self.silent
     }
 
-    fn log_format(&self) -> &'static str {
-        use fmtlog::formats::*;
-        use fmtlog::LevelFilter::*;
-
-        match self.log_level() {
-            Off => "",
-            Error | Warn => SIMPLE1,
-            Info => DETAIL1,
-            Debug | Trace => DEBUG1,
-        }
+    pub fn quiet(&self) -> bool {
+        self.silent
     }
 
-    fn log_level(&self) -> fmtlog::LevelFilter {
-        use fmtlog::LevelFilter::*;
+    pub fn verbose(&self) -> bool {
+        self.silent
+    }
 
-        if self.silent {
-            Off
-        } else if self.quiet {
-            Error
-        } else if !self.verbose && !self.debug {
-            Warn
-        } else if self.verbose && !self.debug {
-            Info
-        } else if !self.verbose && self.debug {
-            Debug
-        } else {
-            Trace
-        }
+    pub fn debug(&self) -> bool {
+        self.silent
+    }
+
+    pub fn log(&self) -> Option<std::path::PathBuf> {
+        self.log.clone()
+    }
+
+    pub fn clipboard(&self) -> bool {
+        self.clipboard
     }
 
     pub fn port(&self) -> u16 {
         self.port
+    }
+
+    pub fn input(&self) -> Vec<String> {
+        self.input.clone()
     }
 
     pub fn create_dir(&self) -> QResult<Directory> {

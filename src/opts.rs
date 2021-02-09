@@ -84,17 +84,27 @@ impl Opts {
     pub fn create_dir(&self) -> QResult<Directory> {
         let mut dir = Directory::new()?;
 
+        // | len == 0 | clipboard | piped | read stdin |
+        // |----------|-----------|-------|------------|
+        // |        O |         O |     O |          O |
+        // |        O |         O |     X |          X |
+        // |        O |         X |     O |          O |
+        // |        O |         X |     X |          O |
+        // |        X |         O |     O |          O |
+        // |        X |         O |     X |          X |
+        // |        X |         X |     O |          O |
+        // |        X |         X |     X |          X |
         if (self.input.len() == 0 && !self.clipboard) || atty::isnt(atty::Stream::Stdin) {
             dir.add_stdin("stdin")?;
+        }
+
+        if self.clipboard {
+            dir.add_clipboard("clipboard")?;
         }
 
         self.input
             .iter()
             .fold(Ok(&mut dir), |dir, s| dir?.add_file(s))?;
-
-        if self.clipboard {
-            dir.add_clipboard("clipboard")?;
-        }
 
         Ok(dir)
     }

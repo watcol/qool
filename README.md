@@ -1,6 +1,6 @@
 <div align="center"><img src="https://raw.githubusercontent.com/watcol/qool/main/assets/logo_white.svg"></div>
 
-# [WIP] Qool!!
+# Qool!!
 Qool is a simple CLI file sharing tool between PC and phone via QR code.
 
 ## Demo

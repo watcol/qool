@@ -1,10 +1,6 @@
-extern crate clipboard;
 extern crate tempfile;
 
-use crate::QResult;
-use clipboard::{ClipboardContext, ClipboardProvider};
-use std::fs::{copy as fscopy, File};
-use std::io::{copy as iocopy, stdin};
+use crate::{QResult, Item, Stream};
 use std::path::{Path, PathBuf};
 use tempfile::TempDir;
 
@@ -22,34 +18,17 @@ impl Directory {
         })
     }
 
-    pub fn add_stdin<T: Into<String>>(&mut self, name: T) -> QResult<&mut Self> {
-        let path = self.add_name(name);
-        iocopy(&mut stdin(), &mut File::create(path)?)?;
+    pub fn add_item(&mut self, item: Item) -> QResult<&mut Self> {
+        let path = self.add_name(item.name());
+        item.copy(path)?;
         Ok(self)
     }
 
-    pub fn add_file<T: Into<String>>(&mut self, path: T) -> QResult<&mut Self> {
-        let src = path.into();
-        let name = match Path::new(&src).file_name() {
-            Some(s) => s.to_string_lossy(),
-            None => {
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::InvalidInput,
-                    "Can't upload a directory.",
-                )
-                .into())
-            }
-        };
-        let dst = self.add_name(name);
-        fscopy(src, dst)?;
-        Ok(self)
-    }
+    pub fn add_items<T: IntoIterator<Item=Item>>(&mut self, items: T) -> QResult<&mut Self> {
+        for item in items {
+            self.add_item(item)?;
+        }
 
-    pub fn add_clipboard<T: Into<String>>(&mut self, name: T) -> QResult<&mut Self> {
-        let path = self.add_name(name);
-        let buf = ClipboardContext::new()?.get_contents()?;
-        let mut buf = buf.as_bytes();
-        iocopy(&mut buf, &mut File::create(path)?)?;
         Ok(self)
     }
 
@@ -90,11 +69,9 @@ impl Directory {
         )
     }
 
-    fn add_buf<T: Into<String>, U: AsRef<[u8]>>(&self, name: T, buf: U) -> QResult<&Self> {
-        let name = name.into();
-        let mut buf = buf.as_ref();
-        let path = self.dir.path().join(&name);
-        iocopy(&mut buf, &mut File::create(path)?)?;
+    fn add_buf<T: AsRef<str>, U: AsRef<[u8]>>(&self, name: T, buf: U) -> QResult<&Self> {
+        let path = self.dir.path().join(name.as_ref());
+        Stream::buf(buf.as_ref()).copy(path)?;
         Ok(self)
     }
 }

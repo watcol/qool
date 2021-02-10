@@ -4,15 +4,19 @@ extern crate qr2term;
 
 mod dir;
 mod error;
+mod item;
 mod opts;
 mod log_builder;
 mod server;
+mod stream;
 
 use dir::Directory;
 use error::QResult;
+use item::Item;
 use opts::Opts;
 use log_builder::LogBuilder;
 use server::Server;
+use stream::Stream;
 
 fn print_url(url: String) -> QResult<()> {
     qr2term::print_qr(&url)?;
@@ -31,21 +35,25 @@ fn inner_main() -> QResult<()> {
         .log(opts.log())
         .init()?;
 
-    let mut dir = Directory::new()?;
+    let mut items = Vec::new();
     let input = opts.input();
     let clipboard = opts.clipboard();
 
     if (input.len() == 0 && !clipboard) || atty::isnt(atty::Stream::Stdin) {
-        dir.add_stdin("stdin")?;
+        items.push(Item::stdin());
     }
 
     if clipboard {
-        dir.add_clipboard("clipboard")?;
+        items.push(Item::clipboard())
     }
 
-    input
+    items.append(&mut input
         .iter()
-        .fold(Ok(&mut dir), |dir, s| dir?.add_file(s))?;
+        .map(|s| Item::file(s))
+        .collect::<Result<Vec<_>, _>>()?);
+
+    let mut dir = Directory::new()?;
+    dir.add_items(items)?;
 
     let server = Server::new(dir.path()?, opts.port())?;
     print_url(server.url())?;

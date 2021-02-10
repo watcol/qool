@@ -1,6 +1,6 @@
 use crate::QResult;
-use std::io::{Read, Stdin, copy};
 use std::fs::File;
+use std::io::{copy, Write, Stdin};
 use std::path::Path;
 
 #[derive(Debug)]
@@ -8,16 +8,6 @@ pub enum Stream {
     Buf(Vec<u8>),
     Stdin(Stdin),
     File(File),
-}
-
-impl Read for Stream {
-    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        match self {
-            Self::Buf(vec) => vec.as_slice().read(buf),
-            Self::Stdin(stdin) => stdin.read(buf),
-            Self::File(file) => file.read(buf),
-        }
-    }
 }
 
 impl Stream {
@@ -34,7 +24,12 @@ impl Stream {
     }
 
     pub fn copy<T: AsRef<Path>>(&mut self, dst: T) -> QResult<()> {
-        copy(self, &mut File::create(dst)?)?;
+        let mut dst = File::create(dst)?;
+        match self {
+            Self::Buf(vec) => dst.write(vec)? as u64,
+            Self::Stdin(stdin) => copy(stdin, &mut dst)?,
+            Self::File(file) => copy(file, &mut dst)?,
+        };
         Ok(())
     }
 }

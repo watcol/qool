@@ -1,8 +1,9 @@
 #[macro_use]
 extern crate log;
+extern crate atty;
 extern crate qr2term;
 
-mod dir;
+mod dir_builder;
 mod error;
 mod item;
 mod opts;
@@ -10,7 +11,7 @@ mod log_builder;
 mod server;
 mod stream;
 
-use dir::Directory;
+use dir_builder::DirBuilder;
 use error::QResult;
 use item::Item;
 use opts::Opts;
@@ -44,7 +45,7 @@ fn inner_main() -> QResult<()> {
     }
 
     if clipboard {
-        items.push(Item::clipboard())
+        items.push(Item::clipboard());
     }
 
     items.append(&mut input
@@ -52,10 +53,7 @@ fn inner_main() -> QResult<()> {
         .map(|s| Item::file(s))
         .collect::<Result<Vec<_>, _>>()?);
 
-    let mut dir = Directory::new()?;
-    dir.add_items(items)?;
-
-    let server = Server::new(dir.path()?, opts.port())?;
+    let server = Server::new(items, opts.port())?;
     print_url(server.url())?;
     server.start()?;
 

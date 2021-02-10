@@ -1,12 +1,14 @@
 extern crate iron;
 extern crate staticfile;
+extern crate tempfile;
 
-use crate::QResult;
+use crate::{QResult, Item, DirBuilder};
 use std::net::{SocketAddr, UdpSocket};
-use std::path::PathBuf;
+use tempfile::{tempdir, TempDir};
 
 use iron::Iron;
 use staticfile::Static;
+
 
 fn local_addr(port: u16) -> QResult<std::net::SocketAddr> {
     let socket = UdpSocket::bind(("0.0.0.0", port))?;
@@ -16,14 +18,18 @@ fn local_addr(port: u16) -> QResult<std::net::SocketAddr> {
 
 pub struct Server {
     addr: SocketAddr,
-    dir: PathBuf,
+    dir: TempDir,
 }
 
 impl Server {
-    pub fn new<T: Into<PathBuf>>(path: T, port: u16) -> QResult<Self> {
+    pub fn new<T: IntoIterator<Item=Item>>(items: T, port: u16) -> QResult<Self> {
+        let dir = tempdir()?;
+        debug!("dir: {:?}", dir.path());
+        DirBuilder::new(dir.path()).add_items(items)?.finalize()?;
+
         Ok(Self {
             addr: local_addr(port)?,
-            dir: path.into(),
+            dir,
         })
     }
 
@@ -32,7 +38,7 @@ impl Server {
     }
 
     pub fn start(&self) -> QResult<()> {
-        Iron::new(Static::new(&self.dir)).http(self.addr)?;
+        Iron::new(Static::new(self.dir.path())).http(self.addr)?;
         Ok(())
     }
 }

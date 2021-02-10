@@ -80,5 +80,4 @@ impl LogBuilder {
             LevelFilter::Trace
         }
     }
-
 }

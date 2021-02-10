@@ -33,15 +33,15 @@ impl Opts {
     }
 
     pub fn quiet(&self) -> bool {
-        self.silent
+        self.quiet
     }
 
     pub fn verbose(&self) -> bool {
-        self.silent
+        self.verbose
     }
 
     pub fn debug(&self) -> bool {
-        self.silent
+        self.debug
     }
 
     pub fn log(&self) -> Option<std::path::PathBuf> {

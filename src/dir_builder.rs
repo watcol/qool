@@ -1,4 +1,4 @@
-use crate::{QResult, Item, Stream};
+use crate::{Item, QResult, Stream};
 use std::path::PathBuf;
 
 #[derive(Debug)]
@@ -21,7 +21,7 @@ impl DirBuilder {
         Ok(self)
     }
 
-    pub fn add_items<T: IntoIterator<Item=Item>>(&mut self, items: T) -> QResult<&mut Self> {
+    pub fn add_items<T: IntoIterator<Item = Item>>(&mut self, items: T) -> QResult<&mut Self> {
         for item in items {
             self.add_item(item)?;
         }

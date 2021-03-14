@@ -1,7 +1,7 @@
 extern crate fmtlog;
 
 use crate::QResult;
-use fmtlog::{Config, LevelFilter, formats};
+use fmtlog::{formats, Config, LevelFilter};
 use std::path::PathBuf;
 
 #[derive(Debug, Default)]
@@ -44,9 +44,7 @@ impl LogBuilder {
     }
 
     pub fn init(&self) -> QResult<()> {
-        let mut conf = Config::new()
-            .level(self.level())
-            .format(self.format());
+        let mut conf = Config::new().level(self.level()).format(self.format());
 
         if let Some(ref path) = self.log {
             conf = conf.output(path);

@@ -1,6 +1,6 @@
 use crate::QResult;
 use std::fs::File;
-use std::io::{copy, Write, Stdin};
+use std::io::{copy, Stdin, Write};
 use std::path::Path;
 
 #[derive(Debug)]

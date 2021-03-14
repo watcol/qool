@@ -6,16 +6,16 @@ extern crate qr2term;
 mod dir_builder;
 mod error;
 mod item;
-mod opts;
 mod log_builder;
+mod opts;
 mod server;
 mod stream;
 
 use dir_builder::DirBuilder;
 use error::QResult;
 use item::Item;
-use opts::Opts;
 use log_builder::LogBuilder;
+use opts::Opts;
 use server::Server;
 use stream::Stream;
 
@@ -48,10 +48,12 @@ fn inner_main() -> QResult<()> {
         items.push(Item::clipboard());
     }
 
-    items.append(&mut input
-        .iter()
-        .map(Item::file)
-        .collect::<Result<Vec<_>, _>>()?);
+    items.append(
+        &mut input
+            .iter()
+            .map(Item::file)
+            .collect::<Result<Vec<_>, _>>()?,
+    );
 
     let server = Server::new(items, opts.port())?;
     print_url(server.url())?;

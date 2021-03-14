@@ -29,18 +29,18 @@ impl Item {
         let path = path.into();
 
         if path.is_dir() {
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::InvalidInput,
-                    "Can't upload a directory.",
-                )
-                .into())
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidInput,
+                "Can't upload a directory.",
+            )
+            .into());
         }
 
         let name = (&path).file_name().unwrap().to_string_lossy().into_owned();
 
         Ok(Self {
             name,
-            kind: ItemKind::File(path)
+            kind: ItemKind::File(path),
         })
     }
 

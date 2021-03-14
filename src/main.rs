@@ -40,7 +40,7 @@ fn inner_main() -> QResult<()> {
     let input = opts.input();
     let clipboard = opts.clipboard();
 
-    if (input.len() == 0 && !clipboard) || atty::isnt(atty::Stream::Stdin) {
+    if (input.is_empty() && !clipboard) || atty::isnt(atty::Stream::Stdin) {
         items.push(Item::stdin());
     }
 
@@ -50,7 +50,7 @@ fn inner_main() -> QResult<()> {
 
     items.append(&mut input
         .iter()
-        .map(|s| Item::file(s))
+        .map(Item::file)
         .collect::<Result<Vec<_>, _>>()?);
 
     let server = Server::new(items, opts.port())?;

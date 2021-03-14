@@ -50,7 +50,7 @@ impl DirBuilder {
         }
 
         let path = self.dir.join(&name);
-        self.items.push(name.clone());
+        self.items.push(name);
         path
     }
 

@@ -1,6 +1,12 @@
 <div align="center"><img src="https://raw.githubusercontent.com/watcol/qool/main/assets/logo_white.svg"></div>
 
 # Qool!!
+![Crates.io](https://img.shields.io/crates/v/qool)
+![Crates.io](https://img.shields.io/crates/d/qool)
+![Crates.io (latest)](https://img.shields.io/crates/dv/qool)
+![Crates.io](https://img.shields.io/crates/l/qool)
+
+
 Qool is a simple CLI file sharing tool between PC and phone via QR code.
 
 ## Demo

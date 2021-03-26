@@ -1,6 +1,7 @@
 <div align="center"><img src="https://raw.githubusercontent.com/watcol/qool/main/assets/logo_white.svg"></div>
 
 # Qool!!
+![status](https://img.shields.io/badge/status-Active-brightgreen)
 ![Crates.io](https://img.shields.io/crates/v/qool)
 ![Crates.io](https://img.shields.io/crates/d/qool)
 ![Crates.io (latest)](https://img.shields.io/crates/dv/qool)

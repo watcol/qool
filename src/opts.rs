@@ -15,7 +15,8 @@ pub struct Opts {
     debug: bool,
     #[structopt(help = "Change the log destination", short, long)]
     log: Option<std::path::PathBuf>,
-    #[structopt(help = "Upload the contents in clipboard", short, long)]
+    #[cfg(feature = "clipboard")]
+    #[cfg_attr(feature = "clipboard", structopt(help = "Upload the contents in clipboard", short, long))]
     clipboard: bool,
     #[structopt(help = "A port to serve files", short, long, default_value = "3000")]
     port: u16,
@@ -48,6 +49,7 @@ impl Opts {
         self.log.clone()
     }
 
+    #[cfg(feature = "clipboard")]
     pub fn clipboard(&self) -> bool {
         self.clipboard
     }

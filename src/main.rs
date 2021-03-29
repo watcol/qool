@@ -38,14 +38,25 @@ fn inner_main() -> QResult<()> {
 
     let mut items = Vec::new();
     let input = opts.input();
-    let clipboard = opts.clipboard();
 
-    if (input.is_empty() && !clipboard) || atty::isnt(atty::Stream::Stdin) {
-        items.push(Item::stdin());
+    #[cfg(feature = "clipboard")]
+    {
+        let clipboard = opts.clipboard();
+
+        if (input.is_empty() && !clipboard) || atty::isnt(atty::Stream::Stdin) {
+            items.push(Item::stdin());
+        }
+
+        if clipboard {
+            items.push(Item::clipboard());
+        }
     }
 
-    if clipboard {
-        items.push(Item::clipboard());
+    #[cfg(not(feature = "clipboard"))]
+    {
+        if input.is_empty() || atty::isnt(atty::Stream::Stdin) {
+            items.push(Item::stdin())
+        }
     }
 
     items.append(

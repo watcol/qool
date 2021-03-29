@@ -1,6 +1,8 @@
+#[cfg(feature = "clipboard")]
 extern crate clipboard;
 
 use crate::{QResult, Stream};
+#[cfg(feature = "clipboard")]
 use clipboard::{ClipboardContext, ClipboardProvider};
 use std::path::{Path, PathBuf};
 
@@ -18,6 +20,7 @@ impl Item {
         }
     }
 
+    #[cfg(feature = "clipboard")]
     pub fn clipboard() -> Self {
         Self {
             name: String::from("clipboard"),
@@ -57,6 +60,7 @@ impl Item {
 enum ItemKind {
     Stdin,
     File(PathBuf),
+    #[cfg(feature = "clipboard")]
     Clipboard,
 }
 
@@ -65,6 +69,7 @@ impl ItemKind {
         let mut stream = match self {
             Self::Stdin => Stream::stdin(),
             Self::File(src) => Stream::file(src)?,
+            #[cfg(feature = "clipboard")]
             Self::Clipboard => {
                 let src = ClipboardContext::new()?.get_contents()?;
                 Stream::buf(src.as_bytes())

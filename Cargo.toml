@@ -17,9 +17,12 @@ include = [
   "src/**/*.rs",
 ]
 
+[features]
+default = ["clipboard"]
+
 [dependencies]
 atty = "0.2"
-clipboard = "0.5"
+clipboard = { version = "0.5", optional = true }
 fmtlog = "0.1"
 iron = "0.6"
 log = "0.4"
